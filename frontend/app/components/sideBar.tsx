@@ -13,9 +13,11 @@ function SideBar() {
   ];
 
   return (
-    <div className="bg-indigo-400 w-60 shrink-0 h-full">
+    <div className="bg-indigo-400 w-60 shrink-0 h-full ">
       <p className="p-4 font-semibold">Sidebar</p>
-      {/* …nav items… */}
+      <button className="p-4 font-semibold"> click me </button>
+      <button className="p-4 font-semibold"> click me </button>
+      <button className="p-4 font-semibold"> click me </button>
     </div>
   );
 }
