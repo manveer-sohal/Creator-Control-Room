@@ -6,7 +6,6 @@ function serializeData(event_data) {
   var user_name = event_data.event.user_name;
   var broadcaster_user_name = event_data.event.broadcaster_user_name;
   var type = event_data.subscription.type;
-  console.log(message_type, type);
   return {
     user_name: user_name,
     broadcaster_user_name: broadcaster_user_name,
@@ -29,7 +28,6 @@ export function initSocket(httpServer) {
 
   io.on("connection", (socket) => {
     console.log("a user connected, id:", socket.id);
-    socket.emit("message_history", chatHistory);
 
     socket.on("disconnect", () => {
       console.log("user disconnected");
