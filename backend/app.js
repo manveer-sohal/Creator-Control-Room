@@ -1,9 +1,12 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
 dotenv.config();
 import http from "http";
 import { initSocket } from "./socket.js";
+import dbRoutes from "./routes/dbRoutes.js";
+
 // import { instrument } from "@socket.io/admin-ui";
 
 const app = express();
@@ -20,6 +23,8 @@ const allowedOrigins = process.env.CORS_ORIGIN?.split(",") ?? [
 ];
 
 app.use(cors({ origin: allowedOrigins, credentials: true }));
+
+app.use("/db", dbRoutes);
 
 // app.use("/api/clothes", clothesRoutes);
 // app.use("/api/users", userRoutes);
