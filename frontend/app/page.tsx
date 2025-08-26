@@ -6,11 +6,14 @@ import NavBar from "./components/navBar";
 import react, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import GenerateEvent from "./components/generateEvents";
-import EventsWidget from "./components/eventsWidget";
-import SubsWidget from "./components/subsWidget";
-import CreatorsLive from "./components/creatorsLive";
-import TipsWidget from "./components/tipsWidget";
-import NewFollowerWidget from "./components/newFollowersWidget";
+import CreatorsLive from "./components/widgets/creatorsLive";
+import EventsWidget from "./components/widgets/eventsWidget";
+import GiftedWidget from "./components/widgets/giftedWidget";
+import JoinsWidget from "./components/widgets/joins24Widget";
+import NewFollowerWidget from "./components/widgets/newFollowersWidget";
+import RaidWidget from "./components/widgets/raidWidget";
+import SubsWidget from "./components/widgets/subsWidget";
+import { UniqueViewsChart } from "./components/uniqueViewsChart";
 
 import { EventPayload } from "./../types";
 
@@ -26,6 +29,12 @@ declare global {
 export default function Home() {
   const socketRef = useRef<Socket | null>(null);
   const [displayEventList, setDisplayEventList] = useState<eventObj[]>([]);
+  const [newFollowEvents, setNewFollowEvents] = useState<eventObj[]>([]);
+  const [newBitsEvents, setNewBitsEvents] = useState<eventObj[]>([]);
+  const [newRaidEvents, setNewRaidEvents] = useState<eventObj[]>([]);
+  const [newCheerEvents, setNewCheerEvents] = useState<eventObj[]>([]);
+  const [newSubEvents, setNewSubEvents] = useState<eventObj[]>([]);
+  const [newGiftedEvents, setNewGiftedEvents] = useState<eventObj[]>([]);
 
   const creators = [
     { id: 0, name: "TheOneWhoThinks", logo: "/vercel.svg" },
@@ -34,13 +43,6 @@ export default function Home() {
     { id: 3, name: "StableRonaldo", logo: "/vercel.svg" },
     { id: 4, name: "Sukura", logo: "/vercel.svg" },
   ];
-  // FORM SUBMISSION
-  // const handleSubmit = (e: react.FormEvent) => {
-  //   e.preventDefault();
-  //   socketRef.current?.emit("chat message", { msg: message, key: key });
-  //   setMessage("");
-  //   setKey("");
-  // };
 
   // ON HOIST USE EFFECT
   useEffect(() => {
@@ -52,10 +54,30 @@ export default function Home() {
     const s = globalThis.__SOCKET__;
     socketRef.current = s;
 
-    // SOCKET FUNCTIONS
+    // ******SOCKET FUNCTIONS*****
 
+    // NEW EVENT
     const onEvent = (event: eventObj) => {
-      setDisplayEventList((prev) => [...prev, event]);
+      // FOLLOW
+      if (event.type == "channel.follow") {
+        setNewFollowEvents((prev) => [event, ...prev]);
+      }
+      if (event.type == "channel.subscribe") {
+        setNewSubEvents((prev) => [event, ...prev]);
+      }
+      if (event.type == "channel.cheer") {
+        setNewCheerEvents((prev) => [event, ...prev]);
+      }
+      if (event.type == "channel.bits.use") {
+        setNewBitsEvents((prev) => [event, ...prev]);
+      }
+      if (event.type == "channel.raid") {
+        setNewRaidEvents((prev) => [event, ...prev]);
+      }
+      if (event.type == "channel.subscription.gift") {
+        setNewGiftedEvents((prev) => [event, ...prev]);
+      }
+      setDisplayEventList((prev) => [event, ...prev]);
     };
 
     // SOCKET CONNECTIONS
@@ -97,20 +119,21 @@ export default function Home() {
           <div className="grid-rows-[auto_auto_auto]">
             <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
               <CreatorsLive creators={creators} />
-              <EventsWidget events={displayEventList}></EventsWidget>
-              <TipsWidget events={displayEventList}></TipsWidget>
+              <GiftedWidget events={newGiftedEvents}> </GiftedWidget>
             </div>
             <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
-              <SubsWidget events={displayEventList}></SubsWidget>
+              <SubsWidget events={newSubEvents}></SubsWidget>
               <CreatorsLive creators={creators} />
-              <NewFollowerWidget events={displayEventList}></NewFollowerWidget>
+              <NewFollowerWidget events={newFollowEvents}></NewFollowerWidget>
             </div>
+            <UniqueViewsChart></UniqueViewsChart>
           </div>
         </main>
         <aside className="min-h-0 overflow-y-auto pl-0.5 pt-4.5">
           <EventsWidget events={displayEventList}></EventsWidget>
         </aside>
       </div>
+      <div></div>
     </div>
   );
 }
