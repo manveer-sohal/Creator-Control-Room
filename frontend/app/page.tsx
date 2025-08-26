@@ -9,6 +9,7 @@ import react, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import GenerateEvent from "./components/generateEvents";
 import EventsWidget from "./components/eventsWidget";
+import { EventPayload } from "./../types";
 
 // import { EventV2 } from "../types";
 // import { EventsWidgetProps } from "../types";
@@ -24,7 +25,7 @@ export default function Home() {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<{ msg: string; key: string }[]>([]);
   const [key, setKey] = useState<string>("");
-  const [event, setEvent] = useState<Event>();
+  const [event, setEvent] = useState<EventPayload>();
   const [displayEventList, setDisplayEventList] = useState<eventObj[]>([]);
 
   const creators = [
@@ -63,7 +64,7 @@ export default function Home() {
 
     //DISCONNECT SOCKETS
     return () => {
-      s.off("Event", onHistory);
+      s.off("Event", onEvent);
 
       s.disconnect();
       socketRef.current = null;
@@ -71,7 +72,7 @@ export default function Home() {
   }, []);
 
   // GENERATE AN EVENT REQUEST
-  const generateTheEvent = (dataFromChild: Event) => {
+  const generateTheEvent = (dataFromChild: EventPayload) => {
     setEvent(dataFromChild);
     socketRef.current?.emit("Event", dataFromChild);
   };
@@ -89,12 +90,12 @@ export default function Home() {
         {/* Left column (sidebar): fixed width */}
         <aside className="min-h-0 overflow-y-auto">
           <SideBar />
+          <GenerateEvent onAction={generateTheEvent}></GenerateEvent>
         </aside>
 
         {/* Right column (main): takes remaining space, scrolls */}
         <main className="min-w-0 overflow-y-auto p-6 gap-4">
-          <div className="grid min-h-0 grid-cols-[16rem_1fr]">
-            <GenerateEvent onAction={generateTheEvent}></GenerateEvent>
+          <div className="grid min-h-0 grid-cols-[16rem_16rem_16rem] gap-2">
             <CreatorsLive creators={creators} />
             <EventsWidget events={displayEventList}></EventsWidget>
           </div>
