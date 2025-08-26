@@ -1,14 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import CreatorsLive from "./components/creatorsLive";
 import SideBar from "./components/sideBar";
 import NavBar from "./components/navBar";
-
 import react, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import GenerateEvent from "./components/generateEvents";
 import EventsWidget from "./components/eventsWidget";
+import SubsWidget from "./components/subsWidget";
+import CreatorsLive from "./components/creatorsLive";
+import TipsWidget from "./components/tipsWidget";
+import NewFollowerWidget from "./components/newFollowersWidget";
+
 import { EventPayload } from "./../types";
 
 // import { EventV2 } from "../types";
@@ -22,10 +25,6 @@ declare global {
 
 export default function Home() {
   const socketRef = useRef<Socket | null>(null);
-  const [message, setMessage] = useState<string>("");
-  const [messages, setMessages] = useState<{ msg: string; key: string }[]>([]);
-  const [key, setKey] = useState<string>("");
-  const [event, setEvent] = useState<EventPayload>();
   const [displayEventList, setDisplayEventList] = useState<eventObj[]>([]);
 
   const creators = [
@@ -33,6 +32,7 @@ export default function Home() {
     { id: 1, name: "Crazy1Prabh", logo: "/vercel.svg" },
     { id: 2, name: "JasonTheWeen", logo: "/vercel.svg" },
     { id: 3, name: "StableRonaldo", logo: "/vercel.svg" },
+    { id: 4, name: "Sukura", logo: "/vercel.svg" },
   ];
   // FORM SUBMISSION
   // const handleSubmit = (e: react.FormEvent) => {
@@ -73,20 +73,19 @@ export default function Home() {
 
   // GENERATE AN EVENT REQUEST
   const generateTheEvent = (dataFromChild: EventPayload) => {
-    setEvent(dataFromChild);
     socketRef.current?.emit("Event", dataFromChild);
   };
 
   return (
     // Shell controls height + scrolling behavior
-    <div className="grid grid-rows-[auto_1fr] h-[100svh] overflow-hidden bg-amber-950 text-white">
+    <div className="grid grid-rows-[auto_1fr] h-[100svh] overflow-hidden text-white">
       {/* Header row */}
       <header className="sticky top-0 h-14 z-50">
         <NavBar />
       </header>
 
       {/* Content row: 2 columns */}
-      <div className="grid min-h-0 grid-cols-[16rem_1fr]">
+      <div className="grid min-h-0 grid-cols-[16rem_1fr_18rem]">
         {/* Left column (sidebar): fixed width */}
         <aside className="min-h-0 overflow-y-auto">
           <SideBar />
@@ -94,12 +93,23 @@ export default function Home() {
         </aside>
 
         {/* Right column (main): takes remaining space, scrolls */}
-        <main className="min-w-0 overflow-y-auto p-6 gap-4">
-          <div className="grid min-h-0 grid-cols-[16rem_16rem_16rem] gap-2">
-            <CreatorsLive creators={creators} />
-            <EventsWidget events={displayEventList}></EventsWidget>
+        <main className="min-w-0 overflow-y-auto pl-0.5 pt-4.5 gap-1">
+          <div className="grid-rows-[auto_auto_auto]">
+            <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
+              <CreatorsLive creators={creators} />
+              <EventsWidget events={displayEventList}></EventsWidget>
+              <TipsWidget events={displayEventList}></TipsWidget>
+            </div>
+            <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
+              <SubsWidget events={displayEventList}></SubsWidget>
+              <CreatorsLive creators={creators} />
+              <NewFollowerWidget events={displayEventList}></NewFollowerWidget>
+            </div>
           </div>
         </main>
+        <aside className="min-h-0 overflow-y-auto pl-0.5 pt-4.5">
+          <EventsWidget events={displayEventList}></EventsWidget>
+        </aside>
       </div>
     </div>
   );
