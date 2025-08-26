@@ -1,4 +1,7 @@
 //The channel.follow subscription type sends a notification when a specified channel receives a follow.
+// broadcaster is the streamer
+// moderator is the moderator auth, it can be broadcaster too
+// User is the viewer doing the action/triggering the event
 
 export const follow_payload = {
   subscription: {
@@ -120,7 +123,7 @@ export const subscriber_payload = {
 
 //he channel.subscription.gift subscription type sends a notification when a user gives one or more gifted subscriptions in a channel.
 
-const gifted_payload = {
+export const gifted_payload = {
   subscription: {
     id: "f1c2a387-161a-49f9-a165-0f21d7a4e1c4",
     type: "channel.subscription.gift",
