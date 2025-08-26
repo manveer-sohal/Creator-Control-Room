@@ -9,18 +9,18 @@ type creatorNmae = {
 };
 
 function LiveCreator({ creator }: creatorNmae) {
-  const [creatorName, setCreatorName] = useState<string>("");
-
   return (
-    <div className="flex bg-indigo-400 w-full h-10 top-0 z-10 gap-2 p-2">
-      <Image
-        src={creator.logo}
-        alt={`${creator.name} logo`}
-        width={30}
-        height={30}
-      />
-      <p>{creator.name} is live</p>
-    </div>
+    <>
+      <div className="flex bg-[#18181b] border-b-1 border-gray-500 h-12 top-0 z-10 gap-2 pt-3 pb-4">
+        <Image
+          src={creator.logo}
+          alt={`${creator.name} logo`}
+          width={30}
+          height={30}
+        />
+        <p>{creator.name} is live</p>
+      </div>
+    </>
   );
 }
 
