@@ -7,7 +7,8 @@ export interface User {
 }
 
 export interface eventObj {
-  message_type: string;
+  user_name: String;
+  broadcaster_user_name: String;
   type: string;
 }
 
