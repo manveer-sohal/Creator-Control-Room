@@ -13,7 +13,7 @@ function SideBar() {
   ];
 
   return (
-    <div className="bg-[#26262b] shrink-0 h-full ">
+    <div className="bg-[var(--widget)] shrink-0 h-full ">
       <p className="p-4 font-semibold">Sidebar</p>
       <button className="p-4 font-semibold"> click me </button>
       <button className="p-4 font-semibold"> click me </button>
