@@ -1,35 +1,38 @@
 // import React, { useState } from "react";
-import { eventObj } from "@/types";
+import { EventObj } from "@/types";
 
-export default function EventsNoti({
-  user_name,
-  broadcaster_user_name,
-  type,
-}: eventObj) {
+export default function EventsNoti(event: EventObj) {
   //   const [creatorName, setCreatorName] = useState<string>("");
 
-  var text = "Error unreadable type";
-  if (type == "channel.follow") {
-    text = `${user_name} followed ${broadcaster_user_name}`;
-  }
-  if (type == "channel.subscribe") {
-    text = `${user_name} subscribed to ${broadcaster_user_name}`;
-  }
-  if (type == "channel.cheer") {
-    text = `${user_name} cheered ${broadcaster_user_name}`;
-  }
-  if (type == "channel.bits.use") {
-    text = `${user_name} gave bits to ${broadcaster_user_name}`;
-  }
-  if (type == "channel.raid") {
-    text = `${user_name} RAIDED ${broadcaster_user_name}!`;
-  }
-  if (type == "channel.subscription.gift") {
-    text = `${user_name} gifted ${broadcaster_user_name}`;
+  let text = "Error unreadable type";
+  switch (event.type) {
+    case "follow":
+      text = `${event.user_name} followed ${event.broadcaster_user_name}`;
+      break;
+
+    case "subscribe":
+      text = `${event.user_name} subscribed to ${event.broadcaster_user_name}`;
+      break;
+
+    case "cheer":
+      text = `${event.user_name} cheered ${event.bits} bits in ${event.broadcaster_user_name}'s chat: ${event.message}`;
+      break;
+
+    case "bits":
+      text = `${event.user_name} gave ${event.bits} bits to ${event.broadcaster_user_name}`;
+      break;
+
+    case "raid":
+      text = `${event.from_broadcaster_user_name} RAIDED ${event.to_broadcaster_user_name} with ${event.viewers} viewers!`;
+      break;
+
+    case "gift":
+      text = `${event.user_name} gifted ${event.total} subs in ${event.broadcaster_user_name}'s chat`;
+      break;
   }
 
   return (
-    <div className="flex bg-[#18181b] border-b-1 border-gray-500 h-12 top-0 z-10 gap-2 pt-3 pb-4">
+    <div className="flex bg-[#18181b] border-b-1 border-gray-500 h-auto top-0 z-10 gap-2 pt-3 pb-4">
       <p>{text}</p>
     </div>
   );
