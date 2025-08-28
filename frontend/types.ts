@@ -1,19 +1,80 @@
 // example.ts
-export interface User {
-  id: number;
-  name: string;
-  email?: string; // Optional property
-  greet(): void;
+
+// Follow
+interface FollowEvent {
+  type: "follow";
+  user_name: string;
+  broadcaster_user_name: string;
 }
 
-export interface eventObj {
-  user_name: String;
-  broadcaster_user_name: String;
-  type: string;
+// Subscriber
+interface SubscriberEvent {
+  type: "subscribe";
+  user_name: string;
+  broadcaster_user_name: string;
+  tier: number;
+  is_gift: boolean | null;
 }
+
+// Cheer
+interface CheerEvent {
+  type: "cheer";
+  user_name: string;
+  broadcaster_user_name: string;
+  message: string; // e.g. "pogchamp"
+  bits: number;
+}
+
+// Bits Use
+interface BitsUseEvent {
+  type: "bits";
+  user_name: string;
+  broadcaster_user_name: string;
+  bits: number;
+  event_type: string; // "cheer"
+  power_up: unknown | null;
+  message: {
+    text: string;
+    fragments: {
+      type: string;
+      text: string;
+      cheermote: {
+        prefix: string;
+        bits: number;
+        tier: number;
+      } | null;
+      emote: unknown | null;
+    }[];
+  }; // multiple objects, JSON structure
+}
+
+// Raid
+interface RaidEvent {
+  type: "raid";
+  from_broadcaster_user_name: string;
+  to_broadcaster_user_name: string;
+  viewers: number;
+}
+
+// Gift
+interface GiftEvent {
+  type: "gift";
+  user_name: string;
+  broadcaster_user_name: string;
+  tier: number;
+  total: number;
+}
+
+export type EventObj =
+  | FollowEvent
+  | SubscriberEvent
+  | CheerEvent
+  | BitsUseEvent
+  | RaidEvent
+  | GiftEvent;
 
 export interface EventsWidgetProps {
-  events: eventObj[];
+  events: EventObj[];
 }
 
 export interface Subscription {
