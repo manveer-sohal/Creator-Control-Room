@@ -8,10 +8,11 @@
   --background: #000000;
   --foreground: #171717;
   --widget: #18181b;
-  /*Color of card background*/
-  --card: #000000;
-  /*Color of card text*/
-  --card-foreground: oklch(100% 0.00011 271.152);
+  --twitch: oklch(50.273% 0.19646 301.462);
+  --button: oklch(50.273% 0.19646 301.462);
+  --hover: #26262a;
+  --card: #000000; /*Color of card background*/
+  --card-foreground: oklch(100% 0.00011 271.152); /*Color of card text*/
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.13 0.028 261.692);
   --primary: oklch(0.21 0.034 264.665);
@@ -45,6 +46,7 @@
 }
 
 @theme inline {
+  --button: oklch(46.807% 0.18706 317.906);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -87,6 +89,7 @@
 .dark {
   --background: #000000;
   --foreground: #171717;
+  --button: oklch(46.807% 0.18706 317.906);
   --widget: #18181b;
   --card: oklch(0.21 0.034 264.665);
   --card-foreground: oklch(0.985 0.002 247.839);
