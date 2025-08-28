@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import LiveCreator from "../liveCreator";
 
 // List of creators currently live
