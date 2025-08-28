@@ -33,7 +33,7 @@ export default function GenerateEvent({ onAction }: ChildComponentProps) {
 
   // ON CLICK SEND DATA TO THE ONACTION PROP
   const generateEvent = () => {
-    var index = getRandomInt(0, payload_list.length - 1);
+    const index = getRandomInt(0, payload_list.length - 1);
     onAction(payload_list[index]);
   };
 
