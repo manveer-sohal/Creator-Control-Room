@@ -1,27 +1,49 @@
-// import { generateKey } from "crypto";
-// import { Dispatch, SetStateAction } from "react";
 import EventsNoti from "./../eventsNoti";
-import { EventsWidgetProps } from "../../../types";
-// import { eventObj } from "../../types";
+import { EventObj } from "../../../types";
 
-export default function NewFollowerWidget({ events }: EventsWidgetProps) {
+interface EventsWidgetProps {
+  events: EventObj[];
+  show: boolean;
+  onAction: ({
+    widgetName,
+    widgetState,
+  }: {
+    widgetName: string;
+    widgetState: boolean;
+  }) => void; // Defines 'onAction' as a function that takes a string and returns void
+}
+
+export default function FollowerWidget({
+  events,
+  show,
+  onAction,
+}: EventsWidgetProps) {
+  const widgetClicked = () => {
+    console.log("WIDGET SET TO DELETE");
+    onAction({ widgetName: "follow", widgetState: false });
+  };
+
   return (
-    <div className="w-full h-64 grid grid-rows-[auto_1fr] gap-0.5">
-      <div className="bg-[#26262b] p-2 max-h-10 ">
-        <p className="font-bold">New Followers Feed</p>
-      </div>
-      <div className="bg-[#18181b] h-full overflow-y-auto grid grid-cols-1 auto-rows-min gap-1 pl-1 pr-1">
-        {events.map((event, id) => {
-          return (
-            <EventsNoti
-              key={id}
-              user_name={event.user_name}
-              broadcaster_user_name={event.broadcaster_user_name}
-              type={event.type}
-            ></EventsNoti>
-          );
-        })}
-      </div>
-    </div>
+    <>
+      {show && (
+        <div className="w-full h-64 grid grid-rows-[auto_1fr] gap-0.5">
+          <div className="bg-[#26262b] flex justify-between w-full p-2 max-h-10">
+            <p className="font-bold">New Follower Feed</p>
+            <button
+              className="bg-[var(--button)] px-3 py-1 rounded transition"
+              onClick={widgetClicked}
+            >
+              delete
+            </button>
+          </div>
+
+          <div className="bg-[#18181b] h-full overflow-y-auto grid grid-cols-1 auto-rows-min gap-1 pl-1 pr-1">
+            {events.map((event, id) => {
+              return <EventsNoti key={id} {...event}></EventsNoti>;
+            })}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

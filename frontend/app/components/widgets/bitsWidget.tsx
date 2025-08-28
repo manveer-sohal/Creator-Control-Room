@@ -13,14 +13,14 @@ interface EventsWidgetProps {
   }) => void; // Defines 'onAction' as a function that takes a string and returns void
 }
 
-export default function SubsWidget({
+export default function GiftedWidget({
   events,
   show,
   onAction,
 }: EventsWidgetProps) {
   const widgetClicked = () => {
     console.log("WIDGET SET TO DELETE");
-    onAction({ widgetName: "subscribe", widgetState: false });
+    onAction({ widgetName: "bits", widgetState: false });
   };
 
   return (
@@ -28,7 +28,7 @@ export default function SubsWidget({
       {show && (
         <div className="w-full h-64 grid grid-rows-[auto_1fr] gap-0.5">
           <div className="bg-[#26262b] flex justify-between w-full p-2 max-h-10">
-            <p className="font-bold">Subscriber Feed</p>
+            <p className="font-bold">Bits Feed</p>
             <button
               className="bg-[var(--button)] px-3 py-1 rounded transition"
               onClick={widgetClicked}

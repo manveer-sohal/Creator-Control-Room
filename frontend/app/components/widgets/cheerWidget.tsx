@@ -12,15 +12,18 @@ interface EventsWidgetProps {
     widgetState: boolean;
   }) => void; // Defines 'onAction' as a function that takes a string and returns void
 }
+// interface ChildComponentProps {
+//   onAction: ({ widget, data }: { widget: string; data: boolean }) => void; // Defines 'onAction' as a function that takes a string and returns void
+// }
 
-export default function SubsWidget({
+export default function CheerWidget({
   events,
   show,
   onAction,
 }: EventsWidgetProps) {
   const widgetClicked = () => {
     console.log("WIDGET SET TO DELETE");
-    onAction({ widgetName: "subscribe", widgetState: false });
+    onAction({ widgetName: "cheer", widgetState: false });
   };
 
   return (
@@ -28,15 +31,14 @@ export default function SubsWidget({
       {show && (
         <div className="w-full h-64 grid grid-rows-[auto_1fr] gap-0.5">
           <div className="bg-[#26262b] flex justify-between w-full p-2 max-h-10">
-            <p className="font-bold">Subscriber Feed</p>
+            <p className="font-bold">Cheer Feed</p>
             <button
-              className="bg-[var(--button)] px-3 py-1 rounded transition"
+              className="bg-[var(--button)] hover:bg-amber-400 px-3 py-1 rounded transition"
               onClick={widgetClicked}
             >
               delete
             </button>
           </div>
-
           <div className="bg-[#18181b] h-full overflow-y-auto grid grid-cols-1 auto-rows-min gap-1 pl-1 pr-1">
             {events.map((event, id) => {
               return <EventsNoti key={id} {...event}></EventsNoti>;
