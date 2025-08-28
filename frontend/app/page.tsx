@@ -18,7 +18,6 @@ import TestAuth from "./components/testAuth";
 // import { EventV2 } from "../types";
 // import { EventsWidgetProps } from "../types";
 import { EventObj, EventPayload } from "../types";
-
 declare global {
   // extend the global scope for dev/HMR
   var __SOCKET__: Socket | undefined;
@@ -29,6 +28,7 @@ export default function Home() {
 
   const [displayEventList, setDisplayEventList] = useState<EventObj[]>([]);
   const [allEvents, setAllEvents] = useState<Record<string, EventObj[]>>({});
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   // const [newFollowEvents, setNewFollowEvents] = useState<EventObj[]>([]);
   // const [newBitsEvents, setNewBitsEvents] = useState<EventObj[]>([]);
   // const [newRaidEvents, setNewRaidEvents] = useState<EventObj[]>([]);
@@ -52,9 +52,58 @@ export default function Home() {
     { id: 4, name: "Sukura", logo: "/vercel.svg" },
   ];
 
+  // const fetchData = useCallback(async () => {
+  //   console.log("fire");
+  //   const response = await fetch(
+  //     "https://a0c2b18f2a76.ngrok-free.app/db/events",
+  //     {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ hi: "hello" }),
+  //     }
+  //   );
+  //   console.log("show");
+
+  //   const data = await response.json();
+  //   console.log(data);
+  //   setAllEvents((prev) => ({
+  //     ...prev,
+  //     [data.type]: [data, ...(prev[data.type] || [])],
+  //   }));
+  // }, [setAllEvents]);
+
   // ON HOIST USE EFFECT
   useEffect(() => {
-    console.log(widgets.cheer);
+    const test = async () => {
+      const response = await fetch(
+        "https://a0c2b18f2a76.ngrok-free.app/db/events",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ hi: "hello" }),
+        }
+      );
+      console.log("show");
+
+      const data = await response.json();
+      console.log(data);
+      for (const i in data) {
+        setAllEvents((prev) => ({
+          ...prev,
+          [data[i].type]: [data[i], ...(prev[data[i].type] || [])],
+        }));
+        setDisplayEventList((prev) => [data[i], ...prev]);
+      }
+
+      setIsLoaded(true);
+    };
+    if (!isLoaded) {
+      test();
+    }
+    console.log(allEvents);
+
+    // fetchData();
+
     if (!globalThis.__SOCKET__) {
       globalThis.__SOCKET__ = io("http://localhost:3001", {
         transports: ["websocket", "polling"],
@@ -87,7 +136,7 @@ export default function Home() {
       console.log(socketRef.current);
       socketRef.current = null;
     };
-  }, []);
+  }, [allEvents, isLoaded]);
 
   // GENERATE AN EVENT REQUEST
   const generateTheEvent = (dataFromChild: EventPayload) => {
