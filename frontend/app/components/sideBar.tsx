@@ -17,10 +17,9 @@ function SideBar({ onAction }: ChildComponentProps) {
   };
 
   return (
-    <div className="bg-[var(--widget)] grid grid-cols-auto auto-rows-min shrink-0 h-full">
-      <p className="p-4 font-semibold">Sidebar</p>
+    <div className="bg-[var(--widget)] grid grid-cols-auto auto-rows-min shrink-0 h-full py-7">
       <button className="h-10 text-sm rounded-[5px] hover:bg-[var(--hover)] active:bg-[var(--button)] align-middle font-semibold ">
-        clidck me
+        Add Creator
       </button>
       <button className="h-10 text-sm hover:bg-[var(--hover)] active:bg-[var(--button)]  align-middle font-semibold rounded-[5px]">
         click me{" "}
