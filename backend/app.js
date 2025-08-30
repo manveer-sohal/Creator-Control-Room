@@ -64,7 +64,11 @@ app.get("/auth/callback", async (req, res) => {
   const app_accses_token = getAppAccessToken();
 
   // Subscribe to the event
-  const data = SubscribeToFollowEvent(app_accses_token, broadcaster_id);
+  const data = subscribeToAllEvent(
+    app_accses_token,
+    broadcaster_id,
+    broadcaster_id
+  );
 
   // Redirect user to the dashboard
   res.redirect(REDIRECT_URI_DASHBOARD);
@@ -92,16 +96,44 @@ app.post("/webhooks/callback", async (req, res) => {
     return res.sendStatus(403);
   }
 
+  /*
+  router.post("/add-event", async (req, res) => {
+  const { subscription_type, creator_id, company_id, payload } = req.body;
+  try {
+    const result = await pool.query(
+      "INSERT INTO events (id, subscription_type, creator_id, company_id, payload, created_at) VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW())",
+      [subscription_type, creator_id, company_id, payload]
+    );
+    res.json(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error inserting user");
+  }
+     */
   // Handle actual events
   if (messageType === "notification") {
     console.log("EVENT RECEIVED:", JSON.stringify(req.body, null, 2));
+    //enter into databse
+    const response = await fetch("/add-event", {
+      headers: {
+        method: "POST",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        subscription_type: subscription_type,
+        creator_id: creator_id,
+        company_id: company_id,
+        payload: payload,
+      }),
+    });
+    console.log("db insert response:", await response);
 
     //Put the data into a format that is readable for frontend
     var data = serializeData(req.body);
 
     //send the data
     io.emit("Event", data);
-    return res.sendStatus(200);
+    return res.sendStatus(204);
   }
 
   if ("revocation" === req.headers[MESSAGE_TYPE]) {
