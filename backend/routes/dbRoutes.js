@@ -5,13 +5,13 @@ const router = express.Router();
 
 // Insert row
 router.post("/add-event", async (req, res) => {
-  const { platform, type, occurred_at, payload } = req.body;
+  const { subscription_type, creator_id, company_id, payload } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
-      [name, email]
+      "INSERT INTO events (id, subscription_type, creator_id, company_id, payload, created_at) VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW())",
+      [subscription_type, creator_id, company_id, payload]
     );
-    res.json(result.rows[0]);
+    res.json(200);
   } catch (err) {
     console.error(err);
     res.status(500).send("Error inserting user");
