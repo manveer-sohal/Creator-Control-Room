@@ -13,7 +13,7 @@ export function verifyHMACSignature(hmacMessage, signature) {
   return 200;
 }
 
-export function logRevocation(notifcaiton) {
+export function logRevocation(notification) {
   console.log(`${notification.subscription.type} notifications revoked!`);
   console.log(`reason: ${notification.subscription.status}`);
   console.log(
