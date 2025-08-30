@@ -24,6 +24,22 @@ export default function GenerateEvent({ onAction }: ChildComponentProps) {
     gifted_payload,
   ];
 
+  const getEvents = async () => {
+    console.log("Pow");
+    const response = await fetch(
+      "https://a0c2b18f2a76.ngrok-free.app/db/events",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hi: "hello" }),
+      }
+    );
+    console.log("show");
+
+    const data = await response.json();
+    console.log(data);
+    console.log("brow");
+  };
   // GENERATE RANDOM NUMBER
   function getRandomInt(min: number, max: number) {
     min = Math.ceil(min);
@@ -41,6 +57,7 @@ export default function GenerateEvent({ onAction }: ChildComponentProps) {
     <div>
       {" "}
       <button onClick={generateEvent}>Generate Event</button>
+      <button onClick={getEvents}>Get Event</button>
     </div>
   );
 }
