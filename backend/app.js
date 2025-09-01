@@ -9,13 +9,13 @@ import {
   getAppAccessToken,
   getBroadcastId,
   getUserAccessToken,
-  SubscribeToFollowEvent,
+  subscribeToAllEvent,
 } from "./server_utils/authCallback_util.js";
 import {
   logRevocation,
   verifyHMACSignature,
 } from "./server_utils/webhookCallback_utils.js";
-// import { instrument } from "@socket.io/admin-ui";
+import { getIDsForEvent, pushEvent } from "./server_utils/dbCalls_utils.js";
 
 const REDIRECT_URI_DASHBOARD = process.env.REDIRECT_URI_DASHBOARD;
 
@@ -113,26 +113,31 @@ app.post("/webhooks/callback", async (req, res) => {
   // Handle actual events
   if (messageType === "notification") {
     console.log("EVENT RECEIVED:", JSON.stringify(req.body, null, 2));
-    //enter into databse
-    const response = await fetch("/add-event", {
-      headers: {
-        method: "POST",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        subscription_type: subscription_type,
-        creator_id: creator_id,
-        company_id: company_id,
-        payload: payload,
-      }),
-    });
-    console.log("db insert response:", await response);
-
     //Put the data into a format that is readable for frontend
     var data = serializeData(req.body);
+    const subscription_type = data.type;
+    const broadcaster_username = data.broadcaster_user_name;
+    const { company_id, creator_id } = getIDsForEvent(broadcaster_username);
+    const payload = req.body.event;
+
+    console.log("subscription_type:", subscription_type);
+    console.log("broadcaster_username:", broadcaster_username);
+    console.log("company_id:", company_id);
+    console.log("creator_id:", creator_id);
+    console.log("creator_id:", creator_id);
+
+    //enter into databse
+    const response = await pushEvent(
+      subscription_type,
+      creator_id,
+      company_id,
+      payload
+    );
+
+    console.log("db insert response:", await response);
 
     //send the data
-    io.emit("Event", data);
+    io.to(company_id).emit("Event", { company_id, data });
     return res.sendStatus(204);
   }
 
