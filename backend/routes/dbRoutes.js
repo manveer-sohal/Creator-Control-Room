@@ -1,17 +1,64 @@
 import express from "express";
 import pool from "../libs/postgreSQL.js";
-import { serializeData } from "../socket_utils/twitchNoti_utils.js";
 const router = express.Router();
+import bcrypt from "bcrypt";
+import AWS from "aws-sdk";
 
-// Insert row
-router.post("/add-event", async (req, res) => {
-  const { subscription_type, creator_id, company_id, payload } = req.body;
+const s3 = new AWS.S3({
+  region: process.env.AWS_REGION,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+});
+
+export async function uploadLogo(fileBuffer, fileName, mimetype) {
+  const params = {
+    Bucket: process.env.S3_BUCKET,
+    Key: `logos/${fileName}`,
+    Body: fileBuffer,
+    ContentType: mimetype,
+    ACL: "public-read", // makes it viewable via URL
+  };
+
+  return await s3.upload(params).promise();
+}
+
+// update: check for duplicate company names
+// Insert new user
+router.post("/add_user", async (req, res) => {
+  const { name, email, plainPassword, logo } = req.body;
   try {
+    const password_hash = await bcrypt.hash(plainPassword, 10);
+
+    // Insert it into DB
     const result = await pool.query(
-      "INSERT INTO events (id, subscription_type, creator_id, company_id, payload, created_at) VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW())",
-      [subscription_type, creator_id, company_id, payload]
+      `INSERT INTO company (id, name, logo, password_hash, email) 
+       VALUES (gen_random_uuid(), $1, $2, $3, $4)
+       RETURNING id;`,
+      [name, logo, password_hash, email]
     );
-    res.json(200);
+
+    const company_id = result.rows[0].id; // grab the new UUID
+    const logo_url = uploadLogo();
+
+    res.json({ company_id });
+  } catch (err) {
+    console.error(err);
+    res.json({ stats: 500, err: "Error inserting user" });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  const { name, plainPassword } = req.body;
+  try {
+    const password_hash = await bcrypt.hash(plainPassword, 10);
+
+    // Then insert it into Postgres:
+    const response = await pool.query(
+      `SELECT id from company WHERE name = $1 AND password = $2`,
+      [name, password_hash]
+    );
+
+    res.json(response);
   } catch (err) {
     console.error(err);
     res.status(500).send("Error inserting user");
@@ -19,7 +66,6 @@ router.post("/add-event", async (req, res) => {
 });
 
 function serializeDBData(data) {
-  console.log(data);
   var user_name = data.payload.user_name;
   var broadcaster_user_name = data.payload.broadcaster_user_name;
   var type = data.subscription_type;
@@ -83,10 +129,12 @@ function serializeDBData(data) {
 }
 // Query rows
 router.post("/events", async (req, res) => {
+  const { company_id } = req.body;
   console.log("lets try");
   try {
     const result = await pool.query(
-      "SELECT * FROM events WHERE company_id = '11111111-1111-1111-1111-111111111111'"
+      "SELECT * FROM events WHERE company_id = $1",
+      [company_id]
     );
     console.log("bazinga!");
     let rows = [];
@@ -97,7 +145,7 @@ router.post("/events", async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    res.status(500).send("Error fetching users");
+    res.json({ statis: 500, err: "Error fetching users" });
   }
 });
 
