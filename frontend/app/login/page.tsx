@@ -1,10 +1,10 @@
 "use client";
 
-import TestAuth from "../components/testAuth";
+import LoginWidget from "../components/loginWidget";
 export default function Login() {
   return (
-    <div className="bg-red-600 p-1.5 align-middle">
-      <TestAuth />
+    <div className="bg-black p-1.5 align-middle">
+      <LoginWidget />
     </div>
   );
 }
