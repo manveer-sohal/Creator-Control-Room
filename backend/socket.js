@@ -24,13 +24,18 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
   console.log("a user connected, id:", socket.id);
 
+  socket.on("joinCompany", (company_id) => {
+    socket.join(company_id);
+    console.log(`Socket ${socket.id} joined company room: ${company_id}`);
+  });
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
 
   socket.on("Event", (arg) => {
     var data = serializeData(arg);
-    socket.emit("Event", data);
+    socket.to(roomname).emit("Event", data);
   });
 });
 
