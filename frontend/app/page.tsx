@@ -1,4 +1,6 @@
 "use client";
+import { useSearchParams } from "next/navigation";
+
 import SideBar from "./components/sideBar";
 import NavBar from "./components/navBar";
 import { useEffect, useRef, useState } from "react";
@@ -25,7 +27,8 @@ declare global {
 
 export default function Home() {
   const socketRef = useRef<Socket | null>(null);
-
+  const params = useSearchParams();
+  const company_id = params.get("company_id");
   const [displayEventList, setDisplayEventList] = useState<EventObj[]>([]);
   const [allEvents, setAllEvents] = useState<Record<string, EventObj[]>>({});
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
@@ -74,18 +77,22 @@ export default function Home() {
 
   // ON HOIST USE EFFECT
   useEffect(() => {
-    const test = async () => {
+    // UPDATE: Turn this into a get and have data be in the endpoint
+    const loadInitalData = async () => {
       const response = await fetch(
         "https://a0c2b18f2a76.ngrok-free.app/db/events",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ hi: "hello" }),
+          body: JSON.stringify({ company_id: company_id }),
         }
       );
       console.log("show");
 
       const data = await response.json();
+      if (data.res) {
+        console.log(data);
+      }
       console.log(data);
       for (const i in data) {
         setAllEvents((prev) => ({
@@ -98,11 +105,8 @@ export default function Home() {
       setIsLoaded(true);
     };
     if (!isLoaded) {
-      test();
+      loadInitalData();
     }
-    console.log(allEvents);
-
-    // fetchData();
 
     if (!globalThis.__SOCKET__) {
       globalThis.__SOCKET__ = io("http://localhost:3001", {
@@ -111,6 +115,8 @@ export default function Home() {
     }
     const s = globalThis.__SOCKET__;
     socketRef.current = s;
+
+    socketRef.current.emit("joinCompany", company_id);
 
     // ******SOCKET FUNCTIONS*****
     // NEW EVENT
