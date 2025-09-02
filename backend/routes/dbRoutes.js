@@ -203,12 +203,14 @@ function serializeDBData(data) {
     };
   }
   if (type == "channel.subscribe") {
+    console.log(data);
+
     json = {
       type: "subscribe",
       user_name: user_name,
       broadcaster_user_name: broadcaster_user_name,
-      teir: event_data.event.teir,
-      is_gift: event_data.event.gift,
+      tier: data.payload.tier,
+      is_gift: data.payload.gift,
     };
   }
   if (type == "channel.cheer") {
@@ -234,9 +236,9 @@ function serializeDBData(data) {
   if (type == "channel.raid") {
     json = {
       type: "raid",
-      from_broadcaster_user_name: event_data.event.from_broadcaster_user_name,
-      to_broadcaster_user_name: event_data.event.to_broadcaster_user_name,
-      viewers: event_data.event.viewers,
+      from_broadcaster_user_name: data.payload.from_broadcaster_user_name,
+      to_broadcaster_user_name: data.payload.to_broadcaster_user_name,
+      viewers: data.payload.viewers,
     };
   }
   if (type == "channel.subscription.gift") {
@@ -244,8 +246,8 @@ function serializeDBData(data) {
       type: "gift",
       user_name: user_name,
       broadcaster_user_name: broadcaster_user_name,
-      teir: event_data.event.teir,
-      total: event_data.event.total, // Number of gifts
+      tier: data.payload.tier,
+      total: data.payload.total, // Number of gifts
     };
     //cumulative_total: 284, //null if anonymous or not shared by the user
     //is_anonymous: false,
