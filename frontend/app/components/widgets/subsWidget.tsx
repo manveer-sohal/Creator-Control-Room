@@ -30,7 +30,7 @@ export default function SubsWidget({
           <div className="bg-[#26262b] flex justify-between w-full p-2 max-h-10">
             <p className="font-bold">Subscriber Feed</p>
             <button
-              className="bg-[var(--button)] px-3 py-1 rounded transition"
+              className="bg-[var(--button)] hover:bg-violet-500 px-3 rounded transition"
               onClick={widgetClicked}
             >
               delete

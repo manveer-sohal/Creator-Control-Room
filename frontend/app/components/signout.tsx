@@ -10,7 +10,7 @@ export default function Signout() {
   return (
     <div>
       {" "}
-      <button className="bg-[var(--button)]" onClick={onClick}>
+      <button className="rounded-sm p-1 bg-[var(--button)]" onClick={onClick}>
         {" "}
         Sign out
       </button>

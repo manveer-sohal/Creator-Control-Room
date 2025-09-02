@@ -33,11 +33,9 @@ function SideBar({ onAction }: ChildComponentProps) {
           );
         }}
       >
-        Add Creator
+        Add Creator +
       </button>
-      <button className="h-10 text-sm hover:bg-[var(--hover)] active:bg-[var(--button)]  align-middle font-semibold rounded-[5px]">
-        click me{" "}
-      </button>
+
       <button
         onClick={() => setDropdown(!dropdown)}
         className={`h-10 text-sm font-semibold align-middle rounded-[5px] transition ${
@@ -47,7 +45,7 @@ function SideBar({ onAction }: ChildComponentProps) {
         } `}
       >
         {" "}
-        Add Widget
+        Add Widget +
       </button>
       {dropdown && (
         <div className=" w-full origin-top-right rounded-sm shadow-lg ring-1 ring-black ring-opacity-5">
