@@ -4,7 +4,6 @@ import LiveCreator from "../liveCreator";
 // List of creators currently live
 type creatorList = {
   creators: {
-    id: number;
     name: string;
     logo: string;
   }[];
@@ -15,7 +14,11 @@ function CreatorsLive({ creators }: creatorList) {
 
   // Updates liveCount when creators prop changes
   useEffect(() => {
-    setLiveCount(creators.length);
+    if (creators) {
+      setLiveCount(creators.length);
+    } else {
+      setLiveCount(0);
+    }
   }, [creators]);
 
   return (
@@ -24,9 +27,11 @@ function CreatorsLive({ creators }: creatorList) {
         <p className="font-bold ">Number of creators live: {liveCount}</p>
       </div>
       <div className="bg-[#18181b] h-full overflow-y-auto grid grid-cols-1 auto-rows-min gap-1 pl-1 pr-1">
-        {creators.map((creator) => {
-          return <LiveCreator key={creator.id} creator={creator}></LiveCreator>;
-        })}
+        {creators
+          ? creators.map((creator, id) => {
+              return <LiveCreator key={id} creator={creator}></LiveCreator>;
+            })
+          : []}
       </div>
     </div>
   );
