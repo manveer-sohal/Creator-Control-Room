@@ -26,9 +26,30 @@ export async function pushEvent(
       "INSERT INTO events (id, subscription_type, creator_id, company_id, payload, created_at) VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW())",
       [subscription_type, creator_id, company_id, payload]
     );
-    res.json(200);
+    console.log("Creator pushed");
+    return "Creator pushed";
   } catch (err) {
+    console.log("event not pushed");
+
     console.error(err);
-    res.status(500).send("Error inserting user");
+    return "event not pushed";
+  }
+}
+
+export async function addCreator(
+  broadcaster_id,
+  company_id,
+  name,
+  profile_image_url
+) {
+  try {
+    await pool.query(
+      "INSERT INTO creator (id, broadcaster_id, company_id, name, logo) VALUES (gen_random_uuid(), $1, $2, $3, $4)",
+      [broadcaster_id, company_id, name, profile_image_url]
+    );
+    console.log("Creator added");
+  } catch (err) {
+    console.log("Creator not added");
+    console.error(err);
   }
 }
