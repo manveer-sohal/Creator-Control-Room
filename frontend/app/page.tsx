@@ -29,15 +29,16 @@ export default function Home() {
   const socketRef = useRef<Socket | null>(null);
   const params = useSearchParams();
   const company_id = params.get("company_id");
+  const company_name = params.get("company_name");
+  const [logoData, setLogoData] = useState<string>("");
+
   const [displayEventList, setDisplayEventList] = useState<EventObj[]>([]);
   const [allEvents, setAllEvents] = useState<Record<string, EventObj[]>>({});
+  const [creators, setCreators] = useState<{ name: string; logo: string }[]>(
+    []
+  );
+
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  // const [newFollowEvents, setNewFollowEvents] = useState<EventObj[]>([]);
-  // const [newBitsEvents, setNewBitsEvents] = useState<EventObj[]>([]);
-  // const [newRaidEvents, setNewRaidEvents] = useState<EventObj[]>([]);
-  // const [newCheerEvents, setNewCheerEvents] = useState<EventObj[]>([]);
-  // const [newSubEvents, setNewSubEvents] = useState<EventObj[]>([]);
-  // const [newGiftedEvents, setNewGiftedEvents] = useState<EventObj[]>([]);
   const [widgets, setWidgets] = useState<Record<string, boolean>>({
     cheer: true,
     raid: true,
@@ -46,14 +47,6 @@ export default function Home() {
     gift: true,
     follow: true,
   });
-
-  const creators = [
-    { id: 0, name: "TheOneWhoThinks", logo: "/vercel.svg" },
-    { id: 1, name: "Crazy1Prabh", logo: "/vercel.svg" },
-    { id: 2, name: "JasonTheWeen", logo: "/vercel.svg" },
-    { id: 3, name: "StableRonaldo", logo: "/vercel.svg" },
-    { id: 4, name: "Sukura", logo: "/vercel.svg" },
-  ];
 
   // const fetchData = useCallback(async () => {
   //   console.log("fire");
@@ -87,7 +80,29 @@ export default function Home() {
           body: JSON.stringify({ company_id: company_id }),
         }
       );
-      console.log("show");
+
+      const response_creators_data = await fetch(
+        "https://a0c2b18f2a76.ngrok-free.app/db/get_creators",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ company_id: company_id }),
+        }
+      );
+      const creators_data = await response_creators_data.json();
+      setCreators(creators_data);
+
+      const response_logo_data = await fetch(
+        "https://a0c2b18f2a76.ngrok-free.app/db/company/logo",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ company_name: company_name }),
+        }
+      );
+      console.log(company_name);
+      const logo_data = await response_logo_data.json();
+      setLogoData(logo_data.url);
 
       const data = await response.json();
       if (data.res) {
@@ -142,7 +157,7 @@ export default function Home() {
       console.log(socketRef.current);
       socketRef.current = null;
     };
-  }, [allEvents, isLoaded]);
+  }, [isLoaded, company_id, company_name, creators]);
 
   // GENERATE AN EVENT REQUEST
   const generateTheEvent = (dataFromChild: EventPayload) => {
@@ -168,7 +183,7 @@ export default function Home() {
     <div className="grid grid-rows-[auto_1fr] h-[100svh] overflow-hidden text-white">
       {/* Header row */}
       <header className="sticky top-0 h-14 z-50">
-        <NavBar />
+        <NavBar logourl={logoData} company_name={company_name} />
       </header>
 
       {/* Content row: 3 columns */}
