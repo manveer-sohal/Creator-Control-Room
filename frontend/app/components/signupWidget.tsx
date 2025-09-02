@@ -3,33 +3,42 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LoginWidget() {
+export default function SignupWidget() {
+  const router = useRouter();
+
   const [companyName, setCompanyName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [logo, setLogo] = useState<File | null>();
-  const router = useRouter();
+  const [logo, setLogo] = useState<File>();
 
   const validateName = async (event: { preventDefault: () => void }) => {
+    console.log(logo);
     event.preventDefault();
+
+    // PUT FILE INTO FORM FOR MUTLER UPLOAD
+    const formData = new FormData();
+    formData.append("name", companyName);
+    formData.append("email", email);
+    formData.append("plainPassword", password);
+    if (logo) {
+      formData.append("logo", logo, logo.name);
+    }
+
+    // POST SIGN UP INFORMATION
     const response = await fetch(
       "https://a0c2b18f2a76.ngrok-free.app/db/add_user",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: companyName,
-          email: email,
-          plainPassword: password,
-          logo: logo,
-        }),
+        body: formData,
       }
     );
-    const data = await response.json();
-    const company_id = data.company_id;
+
+    // ONCE SIGN UP COMPLETE PUSH USER TO DASHBOARD (LOOK INTO JWT TOKEN AND VALADATING)
+    const { company_id, company_name } = await response.json();
+
     if (company_id) {
       // Redirect with company_id in the URL
-      router.push(`/?company_id=${company_id}`);
+      router.push(`/?company_id=${company_id}&company_name=${company_name}`);
     }
   };
   return (
@@ -84,8 +93,9 @@ export default function LoginWidget() {
             id="logo"
             type="file"
             accept="image/*"
-            onChange={(e) => setLogo(e.target.files?.[0] || null)}
+            onChange={(e) => setLogo(e.target.files?.[0])}
             className="hidden"
+            required
           />
 
           {/* Custom styled button */}
@@ -111,7 +121,9 @@ export default function LoginWidget() {
         </button>
         <button
           className="w-full py-2 bg-indigo-500 text-white font-semibold rounded hover:bg-indigo-700 transition"
-          type="submit"
+          onClick={() => {
+            router.push(`/login`);
+          }}
         >
           Log in
         </button>

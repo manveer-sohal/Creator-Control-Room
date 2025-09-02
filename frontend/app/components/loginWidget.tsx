@@ -1,23 +1,62 @@
 // import { generateKey } from "crypto";
 // import { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginWidget() {
+  const router = useRouter();
   const [companyName, setCompanyName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [logo, setLogo] = useState<File | null>();
+  const [incorrectLogin, setIncorrectLogin] = useState<boolean>(false);
 
-  const validateName = () => {
+  const submitForm = async (event: { preventDefault: () => void }) => {
+    event.preventDefault();
     console.log(companyName);
+
+    // POST SIGN UP INFORMATION
+    const response = await fetch(
+      "https://a0c2b18f2a76.ngrok-free.app/db/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company_name: companyName,
+          plainPassword: password,
+        }),
+      }
+    );
+
+    // ONCE SIGN UP COMPLETE PUSH USER TO DASHBOARD (LOOK INTO JWT TOKEN AND VALADATING)
+    const data = await response.json();
+    console.log(data);
+    if (data.res == 401) {
+      console.log("Incorrect login");
+      setIncorrectLogin(true);
+    } else {
+      const company_id = data.data.id;
+      const company_name = data.data.name;
+
+      if (company_id) {
+        // Redirect with company_id in the URL
+        router.push(`/?company_id=${company_id}&company_name=${company_name}`);
+      }
+    }
   };
+
   return (
     <div className="flex justify-center items-center min-h-screen">
       <form
         id="form"
         className="w-80 p-6 bg-indigo-200 rounded-lg shadow-md space-y-4"
-        onSubmit={validateName}
+        onSubmit={submitForm}
       >
+        {/* Login Error */}
+        {incorrectLogin && (
+          <p>
+            Incorrect Login information. Either your comapny name or password is
+            wrong.
+          </p>
+        )}
         {/* Company Name */}
         <label className="block bg">
           <span className="block mb-1 font-medium">Company Name</span>
@@ -51,7 +90,9 @@ export default function LoginWidget() {
         </button>
         <button
           className="w-full py-2 bg-indigo-500 text-white font-semibold rounded hover:bg-indigo-700 transition"
-          type="submit"
+          onClick={() => {
+            router.push(`/signup`);
+          }}
         >
           Sign up
         </button>
