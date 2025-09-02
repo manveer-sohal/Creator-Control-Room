@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import SideBar from "./components/sideBar";
 import NavBar from "./components/navBar";
@@ -30,6 +30,8 @@ export default function Home() {
   const params = useSearchParams();
   const company_id = params.get("company_id");
   const company_name = params.get("company_name");
+  const router = useRouter();
+
   const [logoData, setLogoData] = useState<string>("");
 
   const [displayEventList, setDisplayEventList] = useState<EventObj[]>([]);
@@ -70,6 +72,9 @@ export default function Home() {
 
   // ON HOIST USE EFFECT
   useEffect(() => {
+    if (!company_id) {
+      router.push(`/login`);
+    }
     // UPDATE: Turn this into a get and have data be in the endpoint
     const loadInitalData = async () => {
       const response = await fetch(
@@ -157,7 +162,7 @@ export default function Home() {
       console.log(socketRef.current);
       socketRef.current = null;
     };
-  }, [isLoaded, company_id, company_name, creators]);
+  }, [isLoaded, company_id, company_name, router]);
 
   // GENERATE AN EVENT REQUEST
   const generateTheEvent = (dataFromChild: EventPayload) => {
@@ -179,64 +184,68 @@ export default function Home() {
   };
 
   return (
-    // Shell controls height + scrolling behavior
-    <div className="grid grid-rows-[auto_1fr] h-[100svh] overflow-hidden text-white">
-      {/* Header row */}
-      <header className="sticky top-0 h-14 z-50">
-        <NavBar logourl={logoData} company_name={company_name} />
-      </header>
+    <>
+      {company_id && (
+        // Shell controls height + scrolling behavior
+        <div className="grid grid-rows-[auto_1fr] h-[100svh] overflow-hidden text-white">
+          {/* Header row */}
+          <header className="sticky top-0 h-14 z-50">
+            <NavBar logourl={logoData} company_name={company_name} />
+          </header>
 
-      {/* Content row: 3 columns */}
-      <div className="grid min-h-0 grid-cols-[16rem_1fr_18rem]">
-        {/* Left column (sidebar): fixed width */}
-        <aside className="min-h-0 overflow-y-auto">
-          <SideBar onAction={widgetStateChange}></SideBar>
-          <GenerateEvent onAction={generateTheEvent}></GenerateEvent>
-          <TestAuth></TestAuth>
-        </aside>
+          {/* Content row: 3 columns */}
+          <div className="grid min-h-0 grid-cols-[16rem_1fr_18rem]">
+            {/* Left column (sidebar): fixed width */}
+            <aside className="min-h-0 overflow-y-auto">
+              <SideBar onAction={widgetStateChange}></SideBar>
+              <GenerateEvent onAction={generateTheEvent}></GenerateEvent>
+              <TestAuth></TestAuth>
+            </aside>
 
-        {/* Right column (main): takes remaining space, scrolls */}
-        <main className="min-w-0 overflow-y-auto pl-0.5 pt-4.5 gap-1">
-          <div className="grid-rows-[auto_auto_auto]">
-            <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
-              <CreatorsLive creators={creators} />
-              <GiftedWidget
-                onAction={widgetStateChange}
-                events={allEvents["gift"] || []}
-                show={widgets.gift}
-              />
-              <CheerWidget
-                onAction={widgetStateChange}
-                events={allEvents["cheer"] || []}
-                show={widgets.cheer}
-              />
-            </div>
-            <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
-              <SubsWidget
-                onAction={widgetStateChange}
-                events={allEvents["subscribe"] || []}
-                show={widgets.subscribe}
-              ></SubsWidget>
-              <BitsWidget
-                onAction={widgetStateChange}
-                events={allEvents["bits"] || []}
-                show={widgets.bits}
-              ></BitsWidget>
-              <NewFollowerWidget
-                onAction={widgetStateChange}
-                events={allEvents["follow"] || []}
-                show={widgets.follow}
-              ></NewFollowerWidget>
-              {/* <RaidWidget events={newRaidEvents}></RaidWidget> */}
-            </div>
-            <UniqueViewsChart></UniqueViewsChart>
+            {/* Right column (main): takes remaining space, scrolls */}
+            <main className="min-w-0 overflow-y-auto pl-0.5 pt-4.5 gap-1">
+              <div className="grid-rows-[auto_auto_auto]">
+                <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
+                  <CreatorsLive creators={creators} />
+                  <GiftedWidget
+                    onAction={widgetStateChange}
+                    events={allEvents["gift"] || []}
+                    show={widgets.gift}
+                  />
+                  <CheerWidget
+                    onAction={widgetStateChange}
+                    events={allEvents["cheer"] || []}
+                    show={widgets.cheer}
+                  />
+                </div>
+                <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
+                  <SubsWidget
+                    onAction={widgetStateChange}
+                    events={allEvents["subscribe"] || []}
+                    show={widgets.subscribe}
+                  ></SubsWidget>
+                  <BitsWidget
+                    onAction={widgetStateChange}
+                    events={allEvents["bits"] || []}
+                    show={widgets.bits}
+                  ></BitsWidget>
+                  <NewFollowerWidget
+                    onAction={widgetStateChange}
+                    events={allEvents["follow"] || []}
+                    show={widgets.follow}
+                  ></NewFollowerWidget>
+                  {/* <RaidWidget events={newRaidEvents}></RaidWidget> */}
+                </div>
+                <UniqueViewsChart></UniqueViewsChart>
+              </div>
+            </main>
+            <aside className="min-h-0 overflow-y-auto pl-0.5 pt-4.5">
+              <EventsWidget events={displayEventList}></EventsWidget>
+            </aside>
           </div>
-        </main>
-        <aside className="min-h-0 overflow-y-auto pl-0.5 pt-4.5">
-          <EventsWidget events={displayEventList}></EventsWidget>
-        </aside>
-      </div>
-      <div></div>
-    </div>
+          <div></div>
+        </div>
+      )}
+    </>
   );
 }
