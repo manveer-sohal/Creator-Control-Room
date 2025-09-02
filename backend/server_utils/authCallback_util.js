@@ -26,7 +26,7 @@ export async function getUserAccessToken(code) {
   return data.access_token;
 }
 
-export async function getBroadcastId(userAccessToken) {
+export async function getBroadcasterInfo(userAccessToken) {
   const userResp = await fetch("https://api.twitch.tv/helix/users", {
     headers: {
       "Client-Id": CLIENT_ID,
@@ -35,8 +35,16 @@ export async function getBroadcastId(userAccessToken) {
   });
 
   const userData = await userResp.json();
+  console.log("userData:", userData);
+  const broadcaster_id = userData.data[0].id;
+  const creator_name = userData.data[0].display_name;
+  const profile_image_url = userData.data[0].profile_image_url;
 
-  return userData.data[0].id;
+  return {
+    broadcaster_id,
+    creator_name,
+    profile_image_url,
+  };
 }
 
 export async function getAppAccessToken() {
@@ -111,7 +119,7 @@ export async function SubscribeToGiftEvent(app_accses_token, broadcaster_id) {
         },
         transport: {
           method: "webhook",
-          callback: "https://example.com/webhooks/callback",
+          callback: REDIRECT_URI_WEBHOOK,
           secret: CLIENT_SECRET_WEBHOOK,
         },
       }),
@@ -138,7 +146,7 @@ export async function SubscribeToRaidEvent(app_accses_token, broadcaster_id) {
         },
         transport: {
           method: "webhook",
-          callback: "https://example.com/webhooks/callback",
+          callback: REDIRECT_URI_WEBHOOK,
           secret: CLIENT_SECRET_WEBHOOK,
         },
       }),
@@ -148,30 +156,35 @@ export async function SubscribeToRaidEvent(app_accses_token, broadcaster_id) {
 }
 
 export async function SubscribeToCheerEvent(app_accses_token, broadcaster_id) {
-  const response_to_cheer = await fetch(
-    "https://api.twitch.tv/helix/eventsub/subscriptions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${app_accses_token}`,
-        "Client-Id": CLIENT_ID,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        type: "channel.cheer",
-        version: "1",
-        condition: {
-          broadcaster_user_id: broadcaster_id,
+  try {
+    const response_to_cheer = await fetch(
+      "https://api.twitch.tv/helix/eventsub/subscriptions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${app_accses_token}`,
+          "Client-Id": CLIENT_ID,
+          "Content-Type": "application/json",
         },
-        transport: {
-          method: "webhook",
-          callback: "https://example.com/webhooks/callback",
-          secret: CLIENT_SECRET_WEBHOOK,
-        },
-      }),
-    }
-  );
-  const data = await response_to_cheer.json();
+        body: JSON.stringify({
+          type: "channel.cheer",
+          version: "1",
+          condition: {
+            broadcaster_user_id: broadcaster_id,
+          },
+          transport: {
+            method: "webhook",
+            callback: REDIRECT_URI_WEBHOOK,
+            secret: CLIENT_SECRET_WEBHOOK,
+          },
+        }),
+      }
+    );
+    const data = await response_to_cheer.json();
+    return data;
+  } catch (error) {
+    console.log("Cheer subscribe: ", error);
+  }
 }
 
 export async function SubscribeToBitsEvent(app_accses_token, broadcaster_id) {
@@ -192,7 +205,7 @@ export async function SubscribeToBitsEvent(app_accses_token, broadcaster_id) {
         },
         transport: {
           method: "webhook",
-          callback: "https://example.com/webhooks/callback",
+          callback: REDIRECT_URI_WEBHOOK,
           secret: CLIENT_SECRET_WEBHOOK,
         },
       }),
