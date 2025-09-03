@@ -7,15 +7,19 @@ import dbRoutes from "./routes/dbRoutes.js";
 import { serializeData } from "./socket_utils/twitchNoti_utils.js";
 import {
   getAppAccessToken,
-  getBroadcastId,
+  getBroadcasterInfo,
   getUserAccessToken,
-  SubscribeToFollowEvent,
+  subscribeToAllEvent,
 } from "./server_utils/authCallback_util.js";
 import {
   logRevocation,
   verifyHMACSignature,
 } from "./server_utils/webhookCallback_utils.js";
-// import { instrument } from "@socket.io/admin-ui";
+import {
+  getIDsForEvent,
+  pushEvent,
+  addCreator,
+} from "./server_utils/dbCalls_utils.js";
 
 const REDIRECT_URI_DASHBOARD = process.env.REDIRECT_URI_DASHBOARD;
 
@@ -27,7 +31,9 @@ const allowedOrigins = process.env.CORS_ORIGIN?.split(",") ?? [
 ];
 
 // Middleware for cors origin
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(
+  cors({ origin: allowedOrigins, methods: ["GET", "POST"], credentials: true })
+);
 
 // Middleware to capture raw body (needed for signature verification)
 app.use(
@@ -51,14 +57,32 @@ app.get("/healthz", (_req, res) =>
 app.get("/", (_req, res) => res.send("Go to /healthz for health check"));
 
 app.get("/auth/callback", async (req, res) => {
-  const code = req.query.code;
+  const { code, state } = req.query;
+  const [company_id, company_name] = state.split("|");
+
+  console.log("company_id: ", company_id);
+  console.log("company_id: ", company_name);
+  console.log("code: ", code);
+  if (!code) {
+    console.log("Code does not exist");
+    res.redirect(
+      `${REDIRECT_URI_DASHBOARD}?company_id=${company_id}&company_name=${company_name}`
+    );
+    return;
+  }
 
   // Using the code get the user access token
-  const userAccessToken = getUserAccessToken(code);
+  const userAccessToken = await getUserAccessToken(code);
+  console.log("userAccessToken: ", userAccessToken);
 
   // Get the broadcast Id using the user access token
-  const broadcaster_id = getBroadcastId(userAccessToken);
+  const { broadcaster_id, creator_name, profile_image_url } =
+    await getBroadcasterInfo(userAccessToken);
   // const broadcaster_username = userData.data[0].login;
+
+  console.log("broadcaster_id:", broadcaster_id);
+  console.log("creator_name:", creator_name);
+  console.log("creator_profile_image_urlname:", profile_image_url);
 
   // Get app access token
   const app_accses_token = getAppAccessToken();
@@ -70,8 +94,12 @@ app.get("/auth/callback", async (req, res) => {
     broadcaster_id
   );
 
+  addCreator(broadcaster_id, company_id, creator_name, profile_image_url);
+
   // Redirect user to the dashboard
-  res.redirect(REDIRECT_URI_DASHBOARD);
+  res.redirect(
+    `${REDIRECT_URI_DASHBOARD}?company_id=${company_id}&company_name=${company_name}`
+  );
 });
 
 app.post("/webhooks/callback", async (req, res) => {
@@ -113,26 +141,31 @@ app.post("/webhooks/callback", async (req, res) => {
   // Handle actual events
   if (messageType === "notification") {
     console.log("EVENT RECEIVED:", JSON.stringify(req.body, null, 2));
-    //enter into databse
-    const response = await fetch("/add-event", {
-      headers: {
-        method: "POST",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        subscription_type: subscription_type,
-        creator_id: creator_id,
-        company_id: company_id,
-        payload: payload,
-      }),
-    });
-    console.log("db insert response:", await response);
-
     //Put the data into a format that is readable for frontend
     var data = serializeData(req.body);
+    const subscription_type = data.type;
+    const broadcaster_username = data.broadcaster_user_name;
+    const { company_id, creator_id } = getIDsForEvent(broadcaster_username);
+    const payload = req.body.event;
+
+    console.log("subscription_type:", subscription_type);
+    console.log("broadcaster_username:", broadcaster_username);
+    console.log("company_id:", company_id);
+    console.log("creator_id:", creator_id);
+    console.log("creator_id:", creator_id);
+
+    //enter into databse
+    const response = await pushEvent(
+      subscription_type,
+      creator_id,
+      company_id,
+      payload
+    );
+
+    console.log("db insert response:", await response);
 
     //send the data
-    io.emit("Event", data);
+    io.to(company_id).emit("Event", { company_id, data });
     return res.sendStatus(204);
   }
 

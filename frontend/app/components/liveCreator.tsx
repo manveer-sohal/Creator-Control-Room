@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 type creatorNmae = {
   creator: {
-    id: number;
+    // id: number;
     name: string;
     logo: string;
   };
