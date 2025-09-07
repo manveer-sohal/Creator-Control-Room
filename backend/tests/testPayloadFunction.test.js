@@ -3,9 +3,8 @@
 // import { it } from "zod/locales";
 import {
   serializeDataV1,
-  serializeDataV2,
+  serializeData,
 } from "../socket_utils/twitchNoti_utils.js";
-import { checkPayloadType } from "../socket_utils/twitchNoti_utils.js";
 import {
   follow_payload,
   bits_payload,
@@ -33,7 +32,7 @@ it("Get the serialzed Data for a bits payload", () => {
 });
 
 it("Get the serialzed Data for a raid payload", () => {
-  const data = serializeDataV2(raid_payload);
+  const data = serializeData(raid_payload);
   expect(data).toMatchObject({
     from_broadcaster_user_name: expect.any(String),
     to_broadcaster_user_name: expect.any(String),
