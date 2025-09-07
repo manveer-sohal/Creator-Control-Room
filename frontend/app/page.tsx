@@ -74,58 +74,59 @@ export default function Home() {
   useEffect(() => {
     if (!company_id) {
       router.push(`/login`);
-    }
-    // UPDATE: Turn this into a get and have data be in the endpoint
-    const loadInitalData = async () => {
-      const response = await fetch(
-        "https://a0c2b18f2a76.ngrok-free.app/db/events",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ company_id: company_id }),
-        }
-      );
+    } else {
+      // UPDATE: Turn this into a get and have data be in the endpoint
+      const loadInitalData = async () => {
+        const response = await fetch(
+          "https://a0c2b18f2a76.ngrok-free.app/db/events",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ company_id: company_id }),
+          }
+        );
 
-      const response_creators_data = await fetch(
-        "https://a0c2b18f2a76.ngrok-free.app/db/get_creators",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ company_id: company_id }),
-        }
-      );
-      const creators_data = await response_creators_data.json();
-      setCreators(creators_data);
+        const response_creators_data = await fetch(
+          "https://a0c2b18f2a76.ngrok-free.app/db/get_creators",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ company_id: company_id }),
+          }
+        );
+        const creators_data = await response_creators_data.json();
+        setCreators(creators_data);
 
-      const response_logo_data = await fetch(
-        "https://a0c2b18f2a76.ngrok-free.app/db/company/logo",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ company_name: company_name }),
-        }
-      );
-      console.log(company_name);
-      const logo_data = await response_logo_data.json();
-      setLogoData(logo_data.url);
+        const response_logo_data = await fetch(
+          "https://a0c2b18f2a76.ngrok-free.app/db/company/logo",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ company_name: company_name }),
+          }
+        );
+        console.log(company_name);
+        const logo_data = await response_logo_data.json();
+        setLogoData(logo_data.url);
 
-      const data = await response.json();
-      if (data.res) {
+        const data = await response.json();
+        if (data.res) {
+          console.log(data);
+        }
         console.log(data);
-      }
-      console.log(data);
-      for (const i in data) {
-        setAllEvents((prev) => ({
-          ...prev,
-          [data[i].type]: [data[i], ...(prev[data[i].type] || [])],
-        }));
-        setDisplayEventList((prev) => [data[i], ...prev]);
-      }
+        for (const i in data) {
+          setAllEvents((prev) => ({
+            ...prev,
+            [data[i].type]: [data[i], ...(prev[data[i].type] || [])],
+          }));
+          setDisplayEventList((prev) => [data[i], ...prev]);
+        }
 
-      setIsLoaded(true);
-    };
-    if (!isLoaded) {
-      loadInitalData();
+        setIsLoaded(true);
+      };
+      if (!isLoaded) {
+        loadInitalData();
+      }
     }
 
     if (!globalThis.__SOCKET__) {
