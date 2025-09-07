@@ -1,0 +1,25 @@
+{
+  "name": "creator-control-room",
+  "version": "1.0.0",
+  "description": "a Creator Control Room which provides a dashboard for agencies/teams (“tenants”) to monitor their creators’ Twitch status (live/offline, follows, subs, cheers, raids), Discord community events (joins/messages), and StreamElements tips, all in real time. Twitch &amp; StreamElements use WebSockets; Discord uses the Gateway WS.",
+  "main": "index.js",
+  "scripts": {
+    "test:e2e": "playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manveer-sohal/Creator-Control-Room.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/manveer-sohal/Creator-Control-Room/issues"
+  },
+  "homepage": "https://github.com/manveer-sohal/Creator-Control-Room#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0"
+  }
+}

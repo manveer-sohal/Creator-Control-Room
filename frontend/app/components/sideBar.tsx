@@ -60,6 +60,7 @@ function SideBar({ onAction }: ChildComponentProps) {
               Add Cheer Widget
             </a>
             <a
+              data-testid="add me"
               onClick={() => itemClicked("gift")}
               href="#"
               className="block px-4 py-2 text-sm  hover:bg-[var(--hover)]"

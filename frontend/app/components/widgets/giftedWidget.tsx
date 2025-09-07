@@ -30,6 +30,7 @@ export default function GiftedWidget({
           <div className="bg-[#26262b] flex justify-between w-full p-2 max-h-10">
             <p className="font-bold">Gifted Feed</p>
             <button
+              data-testid="delete me"
               className="bg-[var(--button)] hover:bg-violet-500 px-3 rounded transition"
               onClick={widgetClicked}
             >
