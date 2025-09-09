@@ -22,7 +22,7 @@ function CreatorsLive({ creators }: creatorList) {
   }, [creators]);
 
   return (
-    <div className="w-full h-64 grid grid-rows-[auto_1fr] gap-0.5">
+    <div className="basis-1/4 grow h-78 grid grid-rows-[auto_1fr] gap-0.5">
       <div className="bg-[#26262b] p-2 max-h-10 ">
         <p className="font-bold ">Number of creators live: {liveCount}</p>
       </div>
