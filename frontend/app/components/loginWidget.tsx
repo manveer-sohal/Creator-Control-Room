@@ -44,12 +44,17 @@ export default function LoginWidget() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div
+      className="flex justify-center items-center min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: "url('/creator-room-login.png')" }}
+    >
       <form
         id="form"
-        className="w-80 p-6 bg-indigo-200 rounded-lg shadow-md space-y-4"
+        className="w-100 p-6 bg-indigo-200 bg-opacity-70 rounded-lg shadow-md space-y-4"
         onSubmit={submitForm}
       >
+        <h1 className="text-4xl font-extrabold text-center p-2">Log In</h1>
+
         {/* Login Error */}
         {incorrectLogin && (
           <p>
@@ -58,27 +63,33 @@ export default function LoginWidget() {
           </p>
         )}
         {/* Company Name */}
-        <label className="block bg">
-          <span className="block mb-1 font-medium">Company Name</span>
-          <input
-            onChange={(e) => setCompanyName(e.target.value)}
-            className="bg-white w-full p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            type="text"
-            placeholder=" eg. Creator Control Room"
-            required
-          />
+        <span className="block mb-1 font-medium">Company Name</span>
+        <label className="block bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <div className="flex">
+            <input
+              onChange={(e) => setCompanyName(e.target.value)}
+              className="bg-transparent w-full p-2 rounded focus:outline-none"
+              type="text"
+              placeholder=" eg. Creator Control Room"
+              required
+            />
+            <i className="bx  bx-user py-3 px-0.5"></i>
+          </div>
         </label>
 
         {/* Password */}
-        <label className="block">
-          <span className="block mb-1 font-medium">Password</span>
-          <input
-            onChange={(e) => setPassword(e.target.value)}
-            className="bg-white w-full p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            type="password"
-            placeholder="Enter password"
-            required
-          />
+        <span className="block mb-1 font-medium">Password</span>
+        <label className="block bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <div className="flex">
+            <input
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-transparent w-full p-2 rounded focus:outline-none"
+              type="password"
+              placeholder="Enter password"
+              required
+            />
+            <i className="bx  bx-lock py-3 px-0.5"></i>
+          </div>
         </label>
 
         {/* Submit */}
