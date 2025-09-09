@@ -20,6 +20,7 @@ import TestAuth from "./components/testAuth";
 // import { EventV2 } from "../types";
 // import { EventsWidgetProps } from "../types";
 import { EventObj, EventPayload } from "../types";
+import StreamEmbed from "./components/widgets/streamEmbed";
 declare global {
   // extend the global scope for dev/HMR
   var __SOCKET__: Socket | undefined;
@@ -190,12 +191,12 @@ export default function Home() {
         // Shell controls height + scrolling behavior
         <div className="grid grid-rows-[auto_1fr] h-[100svh] overflow-hidden text-white">
           {/* Header row */}
-          <header className="sticky top-0 h-14 z-50">
+          <header className="sticky top-0 h-12 z-50">
             <NavBar logourl={logoData} company_name={company_name} />
           </header>
 
           {/* Content row: 3 columns */}
-          <div className="grid min-h-0 grid-cols-[16rem_1fr_18rem]">
+          <div className="grid min-h-0 grid-cols-[13.5rem_1fr_15rem]">
             {/* Left column (sidebar): fixed width */}
             <aside className="min-h-0 overflow-y-auto">
               <SideBar onAction={widgetStateChange}></SideBar>
@@ -206,7 +207,12 @@ export default function Home() {
             {/* Right column (main): takes remaining space, scrolls */}
             <main className="min-w-0 overflow-y-auto pl-0.5 pt-4.5 gap-1">
               <div className="grid-rows-[auto_auto_auto]">
-                <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
+                <div className="flex flex-wrap gap-0.5 py-0.5">
+                  <StreamEmbed
+                    platform="twitch"
+                    idOrChannel="theonewhothinks"
+                    parent="localhost"
+                  />
                   <CreatorsLive creators={creators} />
                   <GiftedWidget
                     onAction={widgetStateChange}
@@ -217,9 +223,7 @@ export default function Home() {
                     onAction={widgetStateChange}
                     events={allEvents["cheer"] || []}
                     show={widgets.cheer}
-                  />
-                </div>
-                <div className="grid min-h-0 grid-cols-[auto_auto_auto] gap-0.5">
+                  ></CheerWidget>
                   <SubsWidget
                     onAction={widgetStateChange}
                     events={allEvents["subscribe"] || []}
@@ -235,6 +239,8 @@ export default function Home() {
                     events={allEvents["follow"] || []}
                     show={widgets.follow}
                   ></NewFollowerWidget>
+                </div>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-0.5">
                   {/* <RaidWidget events={newRaidEvents}></RaidWidget> */}
                 </div>
                 <UniqueViewsChart></UniqueViewsChart>
