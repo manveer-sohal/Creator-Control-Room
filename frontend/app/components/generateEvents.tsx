@@ -7,7 +7,7 @@ import {
   cheer_payload,
   subscriber_payload,
   gifted_payload,
-} from "../../../backend/tests/payload.js";
+} from "../test/payload.js";
 import { EventPayload } from "../../types";
 interface ChildComponentProps {
   onAction: (data: EventPayload) => void; // Defines 'onAction' as a function that takes a string and returns void
