@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
@@ -16,6 +16,7 @@
     "aws-sdk": "^2.1692.0",
     "bcrypt": "^6.0.0",
     "client-s3": "github:aws-sdk/client-s3",
+    "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "heic-convert": "^2.1.0",
     "multer": "^2.0.2",
