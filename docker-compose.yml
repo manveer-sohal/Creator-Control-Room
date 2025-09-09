@@ -1,0 +1,50 @@
+name: creator-control-room
+
+services:
+  backend:
+    build:
+      context: ./backend # relative path to backend directory (where Dockerfile and package.json are located)
+
+      dockerfile: Dockerfile # This is the path and file name for your backend Dockerfile
+
+    restart: unless-stopped # Restart policy
+
+    env_file: ./backend/.env # Location of you .env file
+
+    # Copies any changes made on the host machine to the container
+    #   - ./backend:/app # Mount the backend directory to /app in the container
+
+    #   - /app/node_modules # Ignore node_modules on host machine and use the one in the container
+
+    ports:
+      - "3001:3001" # Where backend port is exposed: map to container port
+
+    networks:
+      - creator-control-room-app
+  frontend:
+    build:
+      context: ./frontend
+
+      dockerfile: Dockerfile # This is the file name for your backend Dockerfile
+
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    env_file: ./frontend/.env
+
+    #     volumes:
+
+    #       - ./frontend:/app
+
+    #       - /app/node_modules
+
+    depends_on:
+      - backend
+    networks:
+      - creator-control-room-app
+
+networks:
+  creator-control-room-app:
+    driver: bridge
