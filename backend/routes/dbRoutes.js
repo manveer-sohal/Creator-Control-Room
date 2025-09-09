@@ -291,7 +291,7 @@ router.post("/events", async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    res.json({ statis: 500, err: "Error fetching users" });
+    return res.json({ statis: 500, err: "Error fetching users" });
   }
 });
 
