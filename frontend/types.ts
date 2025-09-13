@@ -1,5 +1,7 @@
-// example.ts
-
+export type CreatorInfo = {
+  logo: string;
+  broadcaster_id: string;
+};
 // Follow
 interface FollowEvent {
   type: "follow";

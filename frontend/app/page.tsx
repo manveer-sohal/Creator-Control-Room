@@ -19,7 +19,7 @@ import { UniqueViewsChart } from "./components/uniqueViewsChart";
 import TestAuth from "./components/testAuth";
 // import { EventV2 } from "../types";
 // import { EventsWidgetProps } from "../types";
-import { EventObj, EventPayload } from "../types";
+import { EventObj, EventPayload, CreatorInfo } from "../types";
 import StreamEmbed from "./components/widgets/streamEmbed";
 declare global {
   // extend the global scope for dev/HMR
@@ -37,9 +37,7 @@ export default function Home() {
 
   const [displayEventList, setDisplayEventList] = useState<EventObj[]>([]);
   const [allEvents, setAllEvents] = useState<Record<string, EventObj[]>>({});
-  const [creators, setCreators] = useState<{ name: string; logo: string }[]>(
-    []
-  );
+  const [creators, setCreators] = useState<Record<string, CreatorInfo>>({});
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [widgets, setWidgets] = useState<Record<string, boolean>>({
@@ -178,12 +176,29 @@ export default function Home() {
     widgetName: string;
     widgetState: boolean;
   }) => {
-    console.log(widgetName, widgetState);
     setWidgets((prev) => ({
       ...prev,
       [widgetName]: widgetState,
     }));
   };
+  async function filterCreator(name: string) {
+    console.log(creators[name]);
+
+    const response = await fetch("", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ company_name: company_name }),
+    });
+    const data = await response.json();
+
+    for (const i in data) {
+      setAllEvents((prev) => ({
+        ...prev,
+        [data[i].type]: [data[i], ...(prev[data[i].type] || [])],
+      }));
+      setDisplayEventList((prev) => [data[i], ...prev]);
+    }
+  }
 
   return (
     <>
@@ -199,7 +214,11 @@ export default function Home() {
           <div className="grid min-h-0 grid-cols-[13.5rem_1fr_15rem]">
             {/* Left column (sidebar): fixed width */}
             <aside className="min-h-0 overflow-y-auto">
-              <SideBar onAction={widgetStateChange}></SideBar>
+              <SideBar
+                creators={creators}
+                onAction={widgetStateChange}
+                onActionFilter={filterCreator}
+              ></SideBar>
               <GenerateEvent onAction={generateTheEvent}></GenerateEvent>
               <TestAuth></TestAuth>
             </aside>
