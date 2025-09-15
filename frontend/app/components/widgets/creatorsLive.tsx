@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
 import LiveCreator from "../liveCreator";
+import { CreatorInfo } from "../../../types";
 
-// List of creators currently live
-type creatorList = {
-  creators: {
-    name: string;
-    logo: string;
-  }[];
-};
-
-function CreatorsLive({ creators }: creatorList) {
+interface creatorProp {
+  creators: Record<string, CreatorInfo>;
+}
+function CreatorsLive({ creators }: creatorProp) {
   const [liveCount, setLiveCount] = useState<number>(0);
 
   // Updates liveCount when creators prop changes
   useEffect(() => {
     if (creators) {
-      setLiveCount(creators.length);
+      setLiveCount(Object.keys(creators).length);
     } else {
       setLiveCount(0);
     }
@@ -28,8 +24,10 @@ function CreatorsLive({ creators }: creatorList) {
       </div>
       <div className="bg-[#18181b] h-full overflow-y-auto grid grid-cols-1 auto-rows-min gap-1 pl-1 pr-1">
         {creators
-          ? creators.map((creator, id) => {
-              return <LiveCreator key={id} creator={creator}></LiveCreator>;
+          ? Object.entries(creators).map(([name, info], id) => {
+              return (
+                <LiveCreator key={id} creator={[name, info]}></LiveCreator>
+              );
             })
           : []}
       </div>
