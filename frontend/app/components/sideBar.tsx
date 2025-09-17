@@ -118,16 +118,16 @@ function SideBar({ creators, onAction, onActionFilter }: ChildComponentProps) {
       {creatorDropdown && (
         <div className=" w-full origin-top-right rounded-sm shadow-lg ring-1 ring-black ring-opacity-5">
           <div className="py-1 text-center">
-            {Object.keys(creators).map((name, id) => {
+            {Object.entries(creators).map(([index, info]) => {
               return (
                 <a
-                  key={id}
-                  id={name}
+                  key={index}
+                  id={info.name}
                   onClick={(event) => creatorClicked(event)}
                   href="#"
                   className="block px-4 py-2 text-sm  hover:bg-[var(--hover)]"
                 >
-                  {name}
+                  {info.name}
                 </a>
               );
             })}
