@@ -11,11 +11,11 @@ function LiveCreator({ creator }: creatorNmae) {
       <div className="flex bg-[#18181b] border-b-1 border-gray-500 h-12 top-0 z-10 gap-2 pt-3 pb-4">
         <Image
           src={creator[1].logo}
-          alt={`${creator[0]} logo`}
+          alt={`${creator[1].name} logo`}
           width={30}
           height={30}
         />
-        <p>{creator[0]} is live</p>
+        <p>{creator[1].name} is live</p>
       </div>
     </>
   );

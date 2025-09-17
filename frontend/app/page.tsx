@@ -94,6 +94,7 @@ export default function Home() {
           }
         );
         const creators_data = await response_creators_data.json();
+        console.log(creators_data);
         setCreators(creators_data);
 
         const response_logo_data = await fetch(
@@ -227,11 +228,11 @@ export default function Home() {
             <main className="min-w-0 overflow-y-auto pl-0.5 pt-4.5 gap-1">
               <div className="grid-rows-[auto_auto_auto]">
                 <div className="flex flex-wrap gap-0.5 py-0.5">
-                  <StreamEmbed
+                  {/* <StreamEmbed
                     platform="twitch"
                     idOrChannel="theonewhothinks"
                     parent="localhost"
-                  />
+                  /> */}
                   <CreatorsLive creators={creators} />
                   <GiftedWidget
                     onAction={widgetStateChange}

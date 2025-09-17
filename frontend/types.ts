@@ -1,4 +1,5 @@
 export type CreatorInfo = {
+  name: string;
   logo: string;
   broadcaster_id: string;
 };
