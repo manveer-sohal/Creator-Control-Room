@@ -162,10 +162,10 @@ router.post("/login", async (req, res) => {
   const { company_name, plainPassword } = req.body;
   console.log(company_name);
   try {
-    const password_hash = await bcrypt.hash(plainPassword, 10);
-    console.log();
+    // const password_hash = await bcrypt.hash(plainPassword, 10);
+    // console.log();
 
-    // Then insert it into Postgres:
+    // Check for login:
     const response = await pool.query(
       `SELECT id, name, password_hash from company WHERE name = $1`,
       [company_name]
@@ -185,8 +185,13 @@ router.post("/login", async (req, res) => {
     console.log(response.rows[0]);
     res.json({ res: 200, data: response.rows[0] });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error inserting user");
+    if (err.errno == -111) {
+      console.error("Error with databse", err);
+      res.status(500).send("Error querying databse for user");
+    } else {
+      console.error(err);
+      res.status(500).send("Error finding user");
+    }
   }
 });
 
