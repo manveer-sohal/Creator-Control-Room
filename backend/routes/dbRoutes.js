@@ -261,7 +261,7 @@ router.post("/get_creators", async (req, res) => {
   console.log("lets try");
   try {
     const result = await pool.query(
-      "SELECT name, logo FROM creator WHERE company_id = $1",
+      "SELECT name, logo, broadcaster_id FROM creator WHERE company_id = $1",
       [company_id]
     );
     console.log("bazinga! got creators");
@@ -276,6 +276,29 @@ router.post("/get_creators", async (req, res) => {
 // Query rows
 router.post("/events", async (req, res) => {
   const { company_id } = req.body;
+  console.log("lets try");
+  try {
+    const result = await pool.query(
+      "SELECT * FROM events WHERE company_id = $1",
+      [company_id]
+    );
+    console.log("bazinga!");
+    let rows = [];
+    for (let i in result.rows) {
+      rows.push(serializeDBData(result.rows[i]));
+    }
+    return res.json(rows);
+  } catch (err) {
+    console.error(err);
+
+    return res.json({ statis: 500, err: "Error fetching users" });
+  }
+});
+
+// Filter for Creator
+router.post("/events", async (req, res) => {
+  const { company_id } = req.body;
+
   console.log("lets try");
   try {
     const result = await pool.query(
