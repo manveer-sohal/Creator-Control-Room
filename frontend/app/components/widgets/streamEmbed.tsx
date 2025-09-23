@@ -2,29 +2,30 @@
 type steaminfo = {
   platform: string;
   idOrChannel: string;
-  parent: "creator-control-room.vercel.app";
+  parent?: string | string[];
 };
 
-// function getEmbedParents(): string[] {
-//   if (typeof window !== "undefined") {
-//     return [window.location.hostname];
-//   } else if (process.env.NEXT_PUBLIC_EMBED_PARENTS) {
-//     return process.env.NEXT_PUBLIC_EMBED_PARENTS.split(",").map((p) =>
-//       p.trim()
-//     );
-//   } else {
-//     console.log("No embed parents found");
-//     return ["creator-control-room.vercel.app"];
-//   }
-// }
+function getEmbedParents(): string[] {
+  if (typeof window !== "undefined") {
+    return [window.location.hostname];
+  } else if (process.env.NEXT_PUBLIC_EMBED_PARENTS) {
+    return process.env.NEXT_PUBLIC_EMBED_PARENTS.split(",").map((p) =>
+      p.trim()
+    );
+  } else if (process.env.NEXT_PUBLIC_EMBED_PARENT) {
+    return process.env.NEXT_PUBLIC_EMBED_PARENT.split(",").map((p) => p.trim());
+  } else {
+    return ["creator-control-room.vercel.app"];
+  }
+}
 
-export default function StreamEmbed({
-  platform,
-  idOrChannel,
-  parent,
-}: steaminfo) {
+export default function StreamEmbed({ platform, idOrChannel }: steaminfo) {
   if (platform === "twitch") {
-    const src = `https://player.twitch.tv/?channel=${idOrChannel}${parent}&autoplay=false`;
+    const parents = getEmbedParents();
+    const src =
+      `https://player.twitch.tv/?channel=${idOrChannel}` +
+      parents.map((p) => `&parent=${p}`).join("") +
+      `&autoplay=false`;
     return (
       <div className="basis-1/2 grow h-78 aspect-video">
         <div className="bg-[#26262b] flex justify-between w-full p-2 max-h-10">
