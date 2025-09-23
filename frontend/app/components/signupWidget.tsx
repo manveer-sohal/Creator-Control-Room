@@ -26,7 +26,7 @@ export default function SignupWidget() {
 
     // POST SIGN UP INFORMATION
     const response = await fetch(
-      "https://a0c2b18f2a76.ngrok-free.app/db/add_user",
+      "https://creatorcontrolroom-645759902036.northamerica-northeast1.run.app/db/add_user",
       {
         method: "POST",
         body: formData,
