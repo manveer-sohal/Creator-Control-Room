@@ -166,10 +166,15 @@ router.post("/login", async (req, res) => {
     console.log();
 
     // Then insert it into Postgres:
-    const response = await pool.query(
-      `SELECT id, name, password_hash from company WHERE name = $1`,
-      [company_name]
-    );
+    let response = "";
+    try {
+      response = await pool.query(
+        `SELECT id, name, password_hash from company WHERE name = $1`,
+        [company_name]
+      );
+    } catch (error) {
+      console.err("Error retriving user from database: ", error);
+    }
 
     if (response.rowCount == 0) {
       console.log("Incorrect login");
