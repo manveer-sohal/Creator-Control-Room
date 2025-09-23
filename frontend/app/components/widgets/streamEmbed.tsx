@@ -1,9 +1,14 @@
 // StreamEmbed.jsx
+type steaminfo = {
+  platform: string;
+  idOrChannel: string;
+  parent: string;
+};
 export default function StreamEmbed({
   platform,
   idOrChannel,
   parent = "localhost",
-}) {
+}: steaminfo) {
   if (platform === "twitch") {
     // Twitch must know your domain via "parent"
     const src = `https://player.twitch.tv/?channel=${idOrChannel}&parent=${parent}&autoplay=false`;
