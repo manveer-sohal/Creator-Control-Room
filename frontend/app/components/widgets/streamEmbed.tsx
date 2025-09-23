@@ -2,18 +2,34 @@
 type steaminfo = {
   platform: string;
   idOrChannel: string;
-  parent: string;
+  parent?: string | string[];
 };
+
+function getEmbedParents(): string[] {
+  if (typeof window !== "undefined") {
+    return [window.location.hostname];
+  } else if (process.env.NEXT_PUBLIC_EMBED_PARENTS) {
+    return process.env.NEXT_PUBLIC_EMBED_PARENTS.split(",").map((p) =>
+      p.trim()
+    );
+  } else {
+    return ["localhost"];
+  }
+}
+
 export default function StreamEmbed({
   platform,
   idOrChannel,
-  parent = typeof window !== "undefined"
-    ? window.location.hostname
-    : process.env.NEXT_PUBLIC_EMBED_PARENT ?? "localhost",
+  parent,
 }: steaminfo) {
   if (platform === "twitch") {
-    // Twitch must know your domain via "parent"
-    const src = `https://player.twitch.tv/?channel=${idOrChannel}&parent=${parent}&autoplay=false`;
+    const parents = parent
+      ? Array.isArray(parent)
+        ? parent
+        : [parent]
+      : getEmbedParents();
+    const parentParams = parents.map((p) => `&parent=${p}`).join("");
+    const src = `https://player.twitch.tv/?channel=${idOrChannel}${parentParams}&autoplay=false`;
     return (
       <div className="basis-1/2 grow h-78 aspect-video">
         <div className="bg-[#26262b] flex justify-between w-full p-2 max-h-10">
