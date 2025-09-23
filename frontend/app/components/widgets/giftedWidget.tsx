@@ -1,6 +1,6 @@
 import EventsNoti from "./../eventsNoti";
 import { EventObj } from "../../../types";
-import { use, useState } from "react";
+import { useState } from "react";
 
 interface EventsWidgetProps {
   events: EventObj[];

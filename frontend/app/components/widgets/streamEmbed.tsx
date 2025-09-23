@@ -7,7 +7,9 @@ type steaminfo = {
 export default function StreamEmbed({
   platform,
   idOrChannel,
-  parent = "localhost",
+  parent = typeof window !== "undefined"
+    ? window.location.hostname
+    : process.env.NEXT_PUBLIC_EMBED_PARENT ?? "localhost",
 }: steaminfo) {
   if (platform === "twitch") {
     // Twitch must know your domain via "parent"
