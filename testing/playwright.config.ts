@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 import path from "path";
 
 const frontend = {
-  command: "npm next dev -- -p 3001",
+  command: "npm run dev -- -p 3001",
   cwd: path.resolve(__dirname, "../frontend"),
   url: "http://localhost:3001",
   reuseExistingServer: !process.env.CI,
