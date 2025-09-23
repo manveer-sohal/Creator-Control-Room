@@ -149,42 +149,44 @@ function HomeClient() {
   }, [BACKEND_ENDPOINT, company_id, company_name, isLoaded, router]);
 
   useEffect(() => {
-    if (!globalThis.__SOCKET__) {
-      globalThis.__SOCKET__ = io(
-        "https://creatorcontrolroom-645759902036.northamerica-northeast1.run.app",
-        {
-          transports: ["websocket", "polling"],
-        }
-      );
+    if (company_id) {
+      if (!globalThis.__SOCKET__) {
+        globalThis.__SOCKET__ = io(
+          "https://creatorcontrolroom-645759902036.northamerica-northeast1.run.app",
+          {
+            transports: ["websocket", "polling"],
+          }
+        );
+      }
+      const s = globalThis.__SOCKET__;
+      socketRef.current = s;
+
+      socketRef.current.emit("joinCompany", company_id);
+
+      // ******SOCKET FUNCTIONS*****
+      // NEW EVENT
+      const onEvent = (event: EventObj) => {
+        console.log(event);
+
+        setAllEvents((prev) => ({
+          ...prev,
+          [event.type]: [event, ...(prev[event.type] || [])],
+        }));
+        setDisplayEventList((prev) => [event, ...prev]);
+      };
+
+      // SOCKET CONNECTIONS
+      s.on("Event", onEvent);
+
+      // DISCONNECT SOCKETS
+      return () => {
+        s.off("Event", onEvent);
+
+        s.disconnect();
+        console.log(socketRef.current);
+        socketRef.current = null;
+      };
     }
-    const s = globalThis.__SOCKET__;
-    socketRef.current = s;
-
-    socketRef.current.emit("joinCompany", company_id);
-
-    // ******SOCKET FUNCTIONS*****
-    // NEW EVENT
-    const onEvent = (event: EventObj) => {
-      console.log(event);
-
-      setAllEvents((prev) => ({
-        ...prev,
-        [event.type]: [event, ...(prev[event.type] || [])],
-      }));
-      setDisplayEventList((prev) => [event, ...prev]);
-    };
-
-    // SOCKET CONNECTIONS
-    s.on("Event", onEvent);
-
-    // DISCONNECT SOCKETS
-    return () => {
-      s.off("Event", onEvent);
-
-      s.disconnect();
-      console.log(socketRef.current);
-      socketRef.current = null;
-    };
   }, [company_id]);
 
   // GENERATE AN EVENT REQUEST
