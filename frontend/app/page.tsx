@@ -3,7 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import SideBar from "./components/sideBar";
 import NavBar from "./components/navBar";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { io, Socket } from "socket.io-client";
 import GenerateEvent from "./components/generateEvents";
 import BitsWidget from "./components/widgets/bitsWidget";
@@ -21,12 +21,28 @@ import TestAuth from "./components/testAuth";
 // import { EventsWidgetProps } from "../types";
 import { EventObj, EventPayload, CreatorInfo } from "../types";
 import StreamEmbed from "./components/widgets/streamEmbed";
+
 declare global {
   // extend the global scope for dev/HMR
   var __SOCKET__: Socket | undefined;
 }
 
+/**
+ * Page wrapper:
+ * Wrap the client sub-component that uses `useSearchParams()` in <Suspense>
+ */
 export default function Home() {
+  return (
+    <Suspense fallback={<div />}>
+      <HomeClient />
+    </Suspense>
+  );
+}
+
+/**
+ * Client sub-component containing the original logic.
+ */
+function HomeClient() {
   // Env vars
   const BACKEND_ENDPOINT =
     process.env.NEXT_PUBLIC_BACKEND_CLOUD_RUN_ENDPOINT ||
@@ -159,10 +175,9 @@ export default function Home() {
     };
 
     // SOCKET CONNECTIONS
-
     s.on("Event", onEvent);
 
-    //DISCONNECT SOCKETS
+    // DISCONNECT SOCKETS
     return () => {
       s.off("Event", onEvent);
 
