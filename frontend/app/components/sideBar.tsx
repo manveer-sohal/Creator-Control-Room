@@ -31,6 +31,8 @@ function SideBar({ creators, onAction, onActionFilter }: ChildComponentProps) {
   const creatorClicked = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
+    console.log("clicl");
+    console.log((event.target as HTMLElement).id);
     onActionFilter((event.target as HTMLElement).id);
   };
 
@@ -107,7 +109,7 @@ function SideBar({ creators, onAction, onActionFilter }: ChildComponentProps) {
       <button
         onClick={() => setCreatorDropdown(!creatorDropdown)}
         className={`h-10 text-sm font-semibold align-middle rounded-[5px] transition ${
-          dropdown
+          creatorDropdown
             ? "bg-[var(--button)]"
             : "bg-[var(--widget)] hover:bg-[var(--hover)]"
         } `}
@@ -118,16 +120,16 @@ function SideBar({ creators, onAction, onActionFilter }: ChildComponentProps) {
       {creatorDropdown && (
         <div className=" w-full origin-top-right rounded-sm shadow-lg ring-1 ring-black ring-opacity-5">
           <div className="py-1 text-center">
-            {Object.keys(creators).map((name, id) => {
+            {Object.entries(creators).map(([index, info], id) => {
               return (
                 <a
                   key={id}
-                  id={name}
+                  id={index}
                   onClick={(event) => creatorClicked(event)}
                   href="#"
                   className="block px-4 py-2 text-sm  hover:bg-[var(--hover)]"
                 >
-                  {name}
+                  {info.name}
                 </a>
               );
             })}
