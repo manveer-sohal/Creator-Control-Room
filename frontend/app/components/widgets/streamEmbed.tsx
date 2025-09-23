@@ -13,6 +13,7 @@ function getEmbedParents(): string[] {
       p.trim()
     );
   } else {
+    console.log("No embed parents found");
     return ["localhost"];
   }
 }
