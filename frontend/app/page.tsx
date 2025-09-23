@@ -27,6 +27,11 @@ declare global {
 }
 
 export default function Home() {
+  // Env vars
+  const BACKEND_ENDPOINT =
+    process.env.NEXT_PUBLIC_BACKEND_CLOUD_RUN_ENDPOINT ||
+    "http://localhost:3000";
+
   const socketRef = useRef<Socket | null>(null);
   const params = useSearchParams();
   const company_id = params.get("company_id");
@@ -49,90 +54,92 @@ export default function Home() {
     follow: true,
   });
 
-  // const fetchData = useCallback(async () => {
-  //   console.log("fire");
-  //   const response = await fetch(
-  //     "https://a0c2b18f2a76.ngrok-free.app/db/events",
-  //     {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ hi: "hello" }),
-  //     }
-  //   );
-  //   console.log("show");
-
-  //   const data = await response.json();
-  //   console.log(data);
-  //   setAllEvents((prev) => ({
-  //     ...prev,
-  //     [data.type]: [data, ...(prev[data.type] || [])],
-  //   }));
-  // }, [setAllEvents]);
-
   // ON HOIST USE EFFECT
   useEffect(() => {
     if (!company_id) {
       router.push(`/login`);
     } else {
-      // UPDATE: Turn this into a get and have data be in the endpoint
-      const loadInitalData = async () => {
-        const response = await fetch(
-          "https://a0c2b18f2a76.ngrok-free.app/db/events",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ company_id: company_id }),
-          }
-        );
+      const loadEvets = async () => {
+        const response = await fetch(`${BACKEND_ENDPOINT}/db/events`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ company_id: company_id }),
+        });
 
+        const data = await response.json();
+
+        return data;
+      };
+
+      const loadCreatorData = async () => {
         const response_creators_data = await fetch(
-          "https://a0c2b18f2a76.ngrok-free.app/db/get_creators",
+          `${BACKEND_ENDPOINT}/db/get_creators`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ company_id: company_id }),
           }
         );
-        const creators_data = await response_creators_data.json();
-        console.log(creators_data);
-        setCreators(creators_data);
+        const data = await response_creators_data.json();
+        return data;
+      };
 
+      const loadLogo = async () => {
         const response_logo_data = await fetch(
-          "https://a0c2b18f2a76.ngrok-free.app/db/company/logo",
+          `${BACKEND_ENDPOINT}/db/company/logo`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ company_name: company_name }),
           }
         );
-        console.log(company_name);
-        const logo_data = await response_logo_data.json();
+        const data = await response_logo_data.json();
+        return data;
+      };
+
+      // UPDATE: Turn this into a get and have data be in the endpoint
+      const loadInitalData = async () => {
+        setIsLoaded(true);
+        console.log("loading data for ", company_name);
+
+        const creators_data = await loadCreatorData();
+        console.log(creators_data);
+        setCreators(creators_data);
+
+        const logo_data = await loadLogo();
         setLogoData(logo_data.url);
 
-        const data = await response.json();
-        if (data.res) {
-          console.log(data);
+        const events_data = await loadEvets();
+
+        if (events_data.res) {
+          console.log(events_data);
         }
-        console.log(data);
-        for (const i in data) {
+        console.log(events_data);
+        for (const i in events_data) {
           setAllEvents((prev) => ({
             ...prev,
-            [data[i].type]: [data[i], ...(prev[data[i].type] || [])],
+            [events_data[i].type]: [
+              events_data[i],
+              ...(prev[events_data[i].type] || []),
+            ],
           }));
-          setDisplayEventList((prev) => [data[i], ...prev]);
+          setDisplayEventList((prev) => [events_data[i], ...prev]);
         }
-
-        setIsLoaded(true);
       };
       if (!isLoaded) {
         loadInitalData();
       }
     }
+  }, [BACKEND_ENDPOINT, company_id, company_name, isLoaded, router]);
 
+  useEffect(() => {
     if (!globalThis.__SOCKET__) {
-      globalThis.__SOCKET__ = io("http://localhost:3001", {
-        transports: ["websocket", "polling"],
-      });
+      globalThis.__SOCKET__ = io(
+        "https://creatorcontrolroom-645759902036.northamerica-northeast1.run.app",
+        {
+          transports: ["websocket", "polling"],
+        }
+      );
     }
     const s = globalThis.__SOCKET__;
     socketRef.current = s;
@@ -163,7 +170,7 @@ export default function Home() {
       console.log(socketRef.current);
       socketRef.current = null;
     };
-  }, [isLoaded, company_id, company_name, router]);
+  }, [company_id]);
 
   // GENERATE AN EVENT REQUEST
   const generateTheEvent = (dataFromChild: EventPayload) => {
@@ -182,23 +189,25 @@ export default function Home() {
       [widgetName]: widgetState,
     }));
   };
+
+  //need to finish this
   async function filterCreator(name: string) {
     console.log(creators[name]);
 
-    const response = await fetch("", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ company_name: company_name }),
-    });
-    const data = await response.json();
+    // const response = await fetch("", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ company_name: company_name }),
+    // });
+    // const data = await response.json();
 
-    for (const i in data) {
-      setAllEvents((prev) => ({
-        ...prev,
-        [data[i].type]: [data[i], ...(prev[data[i].type] || [])],
-      }));
-      setDisplayEventList((prev) => [data[i], ...prev]);
-    }
+    // for (const i in data) {
+    //   setAllEvents((prev) => ({
+    //     ...prev,
+    //     [data[i].type]: [data[i], ...(prev[data[i].type] || [])],
+    //   }));
+    //   setDisplayEventList((prev) => [data[i], ...prev]);
+    // }
   }
 
   return (
@@ -228,11 +237,11 @@ export default function Home() {
             <main className="min-w-0 overflow-y-auto pl-0.5 pt-4.5 gap-1">
               <div className="grid-rows-[auto_auto_auto]">
                 <div className="flex flex-wrap gap-0.5 py-0.5">
-                  {/* <StreamEmbed
+                  <StreamEmbed
                     platform="twitch"
                     idOrChannel="theonewhothinks"
                     parent="localhost"
-                  /> */}
+                  />
                   <CreatorsLive creators={creators} />
                   <GiftedWidget
                     onAction={widgetStateChange}

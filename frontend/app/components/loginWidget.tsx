@@ -15,7 +15,7 @@ export default function LoginWidget() {
 
     // POST SIGN UP INFORMATION
     const response = await fetch(
-      "https://a0c2b18f2a76.ngrok-free.app/db/login",
+      "https://creatorcontrolroom-645759902036.northamerica-northeast1.run.app/db/login",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

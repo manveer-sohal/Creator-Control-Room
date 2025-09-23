@@ -30,6 +30,7 @@ jobs:
 
       - name: Install frontend deps
         run: npm ci
+
         working-directory: ${{ github.workspace }}/frontend  
 
       - name: Install Playwright browsers

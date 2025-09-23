@@ -162,14 +162,17 @@ router.post("/login", async (req, res) => {
   const { company_name, plainPassword } = req.body;
   console.log(company_name);
   try {
-    // const password_hash = await bcrypt.hash(plainPassword, 10);
-    // console.log();
-
-    // Check for login:
-    const response = await pool.query(
-      `SELECT id, name, password_hash from company WHERE name = $1`,
-      [company_name]
-    );
+    
+    // insert into Postgres:
+    let response = "";
+    try {
+      response = await pool.query(
+        `SELECT id, name, password_hash from company WHERE name = $1`,
+        [company_name]
+      );
+    } catch (error) {
+      console.err("Error retriving user from database: ", error);
+    }
 
     if (response.rowCount == 0) {
       console.log("Incorrect login");

@@ -1,5 +1,6 @@
 import EventsNoti from "./../eventsNoti";
 import { EventsWidgetProps } from "../../../types";
+import LoadingNoti from "../loading";
 
 export default function EventsWidget({ events }: EventsWidgetProps) {
   return (
@@ -9,9 +10,13 @@ export default function EventsWidget({ events }: EventsWidgetProps) {
         <button className="bg-[var-button]">Filter </button>
       </div>
       <div className="bg-[#18181b] h-full overflow-y-auto grid grid-cols-1 auto-rows-min gap-1 pl-1 pr-1">
-        {events.map((event, id) => {
-          return <EventsNoti key={id} {...event}></EventsNoti>;
-        })}
+        {events.length > 0 ? (
+          events.map((event, id) => {
+            return <EventsNoti key={id} {...event}></EventsNoti>;
+          })
+        ) : (
+          <LoadingNoti></LoadingNoti>
+        )}
       </div>
     </div>
   );
