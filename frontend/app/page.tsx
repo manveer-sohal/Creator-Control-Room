@@ -257,7 +257,7 @@ function HomeClient() {
                   <StreamEmbed
                     platform="twitch"
                     idOrChannel="theonewhothinks"
-                    parent="localhost"
+                    parent="creator-control-room.vercel.app"
                   />
                   <CreatorsLive creators={creators} />
                   <GiftedWidget
