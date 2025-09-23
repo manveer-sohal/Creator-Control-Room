@@ -14,7 +14,7 @@ function getEmbedParents(): string[] {
     );
   } else {
     console.log("No embed parents found");
-    return ["localhost"];
+    return ["creator-control-room.vercel.app"];
   }
 }
 
