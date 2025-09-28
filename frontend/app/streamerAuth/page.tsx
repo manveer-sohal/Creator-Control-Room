@@ -1,8 +1,17 @@
 "use client";
 import Image from "next/image";
 import TestAuth from "../components/testAuth";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 export default function StreamerAuth() {
+  return (
+    <Suspense fallback={<div />}>
+      <StreamerAuthClient />
+    </Suspense>
+  );
+}
+
+function StreamerAuthClient() {
   const router = useRouter();
   const params = useSearchParams();
 
