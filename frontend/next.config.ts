@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  turbopack: { root: __dirname },
   images: {
     remotePatterns: [
       {
@@ -12,6 +13,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "static-cdn.jtvnw.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "api.qrserver.com",
         pathname: "/**",
       },
     ],
