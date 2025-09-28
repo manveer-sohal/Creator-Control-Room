@@ -25,7 +25,7 @@ function TestAuthInner() {
           window.location.assign(uri);
         }}
       >
-        Test Auth Event
+        Click to Authenticate
       </button>
     </div>
   );
