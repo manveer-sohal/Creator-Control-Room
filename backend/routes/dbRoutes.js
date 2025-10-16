@@ -158,11 +158,11 @@ router.post("/add_user", uploadMem.single("logo"), async (req, res) => {
   }
 });
 
+//filter for creator
 router.post("/login", async (req, res) => {
   const { company_name, plainPassword } = req.body;
   console.log(company_name);
   try {
-    
     // insert into Postgres:
     let response = "";
     try {
@@ -304,14 +304,14 @@ router.post("/events", async (req, res) => {
 });
 
 // Filter for Creator
-router.post("/events", async (req, res) => {
-  const { company_id } = req.body;
+router.post("/events/filter", async (req, res) => {
+  const { company_id, creator_id } = req.body;
 
   console.log("lets try");
   try {
     const result = await pool.query(
-      "SELECT * FROM events WHERE company_id = $1",
-      [company_id]
+      "SELECT * FROM events WHERE company_id = $1 AND creator_id = $2",
+      [company_id, creator_id]
     );
     console.log("bazinga!");
     let rows = [];
