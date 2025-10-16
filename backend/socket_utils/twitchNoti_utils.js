@@ -58,6 +58,7 @@ export function serializeData(event_data) {
   }
   if (type == "channel.raid") {
     json = {
+      broadcaster_user_name: event_data.event.to_broadcaster_user_name,
       type: "raid",
       from_broadcaster_user_name: event_data.event.from_broadcaster_user_name,
       to_broadcaster_user_name: event_data.event.to_broadcaster_user_name,
